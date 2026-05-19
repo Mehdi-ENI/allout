@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Enum\Etat;
 use App\Repository\SortieRepository;
-use BcMath\Number;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -37,8 +36,7 @@ class Sortie
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $infosSortie = null;
 
-    #[ORM\Column(enumType: Etat::class)]
-    private ?Etat $etat = null;
+    private ?Etat $etat = Etat::Creee;
 
     /**
      * @var Collection<int, Participant>
@@ -57,6 +55,9 @@ class Sortie
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Site $site = null;
+
+    #[ORM\Column]
+    private ?bool $active = false;
 
     public function __construct()
     {
@@ -116,12 +117,12 @@ class Sortie
         return $this;
     }
 
-    public function getNbInscriptionsMax(): ?Number
+    public function getNbInscriptionsMax(): ?int
     {
         return $this->nbInscriptionsMax;
     }
 
-    public function setNbInscriptionsMax(Number $nbInscriptionsMax): static
+    public function setNbInscriptionsMax(int $nbInscriptionsMax): static
     {
         $this->nbInscriptionsMax = $nbInscriptionsMax;
 
@@ -208,6 +209,18 @@ class Sortie
     public function setSite(?Site $site): static
     {
         $this->site = $site;
+
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): static
+    {
+        $this->active = $active;
 
         return $this;
     }
