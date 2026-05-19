@@ -1,0 +1,29 @@
+<turbo-frame id="liste-sorties">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for sortie in sorties %}
+            <tr>
+                <td>{{ sortie.id }}</td>
+                <td>{{ sortie.nom }}</td>
+                <td>{{ sortie.dateHeureDebut ? sortie.dateHeureDebut|date('Y-m-d') : '' }}</td>
+                {#                <td>#}
+                {#                    <a href="{{ path('sortie_detail', {'id': sortie.id}) }}">show</a>#}
+                {#                    <a href="{{ path('sortie_update', {'id': sortie.id}) }}">edit</a>#}
+                {#                </td>#}
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</turbo-frame>
