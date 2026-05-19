@@ -36,8 +36,7 @@ class Sortie
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $infosSortie = null;
 
-    #[ORM\Column(enumType: Etat::class)]
-    private ?Etat $etat = null;
+    private ?Etat $etat = Etat::Creee;
 
     /**
      * @var Collection<int, Participant>
@@ -56,6 +55,9 @@ class Sortie
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Site $site = null;
+
+    #[ORM\Column]
+    private ?bool $active = false;
 
     public function __construct()
     {
@@ -207,6 +209,18 @@ class Sortie
     public function setSite(?Site $site): static
     {
         $this->site = $site;
+
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): static
+    {
+        $this->active = $active;
 
         return $this;
     }

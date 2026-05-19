@@ -36,8 +36,6 @@ class AppFixtures extends Fixture
         $manager->persist($lieu);
         $manager->flush();
 
-
-
         $organisateur = new Participant();
         $organisateur->setNom('Test');
         $organisateur->setPrenom('User');
@@ -52,11 +50,7 @@ class AppFixtures extends Fixture
 
         $manager->persist($organisateur);
 
-
-
         $faker = Factory::create('fr_FR');
-
-
 
         for ($i = 0; $i < 20; $i++) {
 
@@ -67,7 +61,6 @@ class AppFixtures extends Fixture
                 ->setDateLimiteInscription($faker->dateTimeBetween('-1 month', '+1 month'))
                 ->setNbInscriptionsMax($faker->numberBetween(10, 100))
                 ->setInfosSortie($faker->paragraph())
-                ->setEtat($faker->randomElement(Etat::cases()))
                 ->setOrganisateur($organisateur);
             $sortie->setSite($site);
             dump($sortie->getSite());
