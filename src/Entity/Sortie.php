@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Enum\Etat;
 use App\Repository\SortieRepository;
-use BcMath\Number;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -116,12 +115,12 @@ class Sortie
         return $this;
     }
 
-    public function getNbInscriptionsMax(): ?Number
+    public function getNbInscriptionsMax(): ?int
     {
         return $this->nbInscriptionsMax;
     }
 
-    public function setNbInscriptionsMax(Number $nbInscriptionsMax): static
+    public function setNbInscriptionsMax(int $nbInscriptionsMax): static
     {
         $this->nbInscriptionsMax = $nbInscriptionsMax;
 
