@@ -40,4 +40,16 @@ class VilleRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    //
+
+    // Recherche les villes dont le nom contient la chaîne donnée
+    public function findByNomContient(?string $recherche): array
+    {
+        return $this->createQueryBuilder('v')
+            ->andWhere('v.nom LIKE :recherche')
+            ->setParameter('recherche', '%'.$recherche.'%')
+            ->orderBy('v.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
