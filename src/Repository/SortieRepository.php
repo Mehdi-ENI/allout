@@ -16,6 +16,26 @@ class SortieRepository extends ServiceEntityRepository
         parent::__construct($registry, Sortie::class);
     }
 
+    public function findWithFilters(array $filters): array
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        if(!empty($filters['site'])) {
+            $qb->andWhere('s.site = :site')
+                ->setParameter('site', $filters['site']);
+        }
+
+        if (!empty($filters['nom'])) {
+            $qb->andWhere('s.nom LIKE :nom')
+                ->setParameter('nom', '%' . $filters['nom'] . '%');
+        }
+
+        if (!empty($filters['date_debut']) && empty($filters['date_fin'])) {
+            $qb->andWhere('s.dateHeureDebut >= :date_heure_debut')
+                ->setParameter('date', $filters['date_debut']);
+        }
+    }
+
 //    /**
 //     * @return Sortie[] Returns an array of Sortie objects
 //     */
