@@ -21,3 +21,20 @@ textarea {
 .btn {
     min-width: 120px;
 }
+
+.flash-success {
+    background-color: green
+}
+
+.flash-error {
+    background-color: red
+}
+
+.flash {
+    padding: 20px;
+    font-weight: bold;
+    font-size: 1.4rem;
+    margin: 1rem 0;
+    border-radius: 5px;
+    color: #132135;
+}
