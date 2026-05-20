@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use phpDocumentor\Reflection\PseudoTypes\Numeric_;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -18,15 +18,19 @@ class Sortie
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank(message: "Le nom est obligatoire.")]
+    #[Assert\Length(min: 3, max: 255, minMessage: "Le nom doit contenir au moins {{ min }} caractères.")]
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
+    #[Assert\GreaterThan("today", message: "La date de début doit être dans le futur.")]
     #[ORM\Column]
     private ?\DateTime $dateHeureDebut = null;
 
     #[ORM\Column]
     private ?\DateInterval $duree = null;
 
+    #[Assert\LessThan(propertyPath: "dateHeureDebut", message : "La date limite d'inscription doit être avant la date de début !")]
     #[ORM\Column]
     private ?\DateTime $dateLimiteInscription = null;
 
@@ -58,6 +62,9 @@ class Sortie
 
     #[ORM\Column]
     private ?bool $active = false;
+
+    #[ORM\Column]
+    private ?bool $annulee = false;
 
     public function __construct()
     {
@@ -141,17 +148,41 @@ class Sortie
         return $this;
     }
 
-    public function getEtat(): ?Etat
+    public function getEtat(): Etat
     {
+        if ($this->annulee) {
+            return Etat::Annulee;
+        }
+
+        $now = new \DateTime();
+
+        $dateFin = (clone $this->dateHeureDebut)
+            ->add($this->duree);
+
+        if (!$this->active) {
+            return Etat::Creee;
+        } elseif ($this->etat === Etat::Creee &&$now < $this->dateLimiteInscription) {
+            return Etat::Publiee;
+        } elseif ($now > $this->dateLimiteInscription && $now < $this->dateHeureDebut) {
+            return Etat::Cloturee;
+        } elseif ($now >= $this->dateHeureDebut && $now <= $dateFin) {
+            return Etat::EnCours;
+        } elseif ($now > $dateFin && $now <= $dateFin->modify('+30 day')) {
+            return Etat::Terminee;
+        } elseif ($now > $dateFin->modify('+30 day')) {
+            return Etat::Archivee;
+        }
+
         return $this->etat;
+
     }
 
-    public function setEtat(Etat $etat): static
-    {
-        $this->etat = $etat;
-
-        return $this;
-    }
+//    public function setEtat(Etat $etat): static
+//    {
+//        $this->etat = $etat;
+//
+//        return $this;
+//    }
 
     /**
      * @return Collection<int, Participant>
@@ -221,6 +252,18 @@ class Sortie
     public function setActive(bool $active): static
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    public function isAnnulee(): ?bool
+    {
+        return $this->annulee;
+    }
+
+    public function setAnnulee(bool $annulee): static
+    {
+        $this->annulee = $annulee;
 
         return $this;
     }

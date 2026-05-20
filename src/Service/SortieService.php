@@ -3,10 +3,12 @@
 namespace App\Service;
 
 use App\Entity\Sortie;
+use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class SortieService{
-    public function __construct(private EntityManagerInterface $entityManager) {
+    public function __construct(private EntityManagerInterface    $entityManager,
+                                private readonly SortieRepository $sortieRepository) {
     }
 
     public function creerSortie(Sortie $sortie): void
@@ -18,5 +20,16 @@ class SortieService{
 
         $this->entityManager->persist($sortie);
         $this->entityManager->flush();
+    }
+
+    public function getSortieDetail(int $id): Sortie {
+
+        $sortie = $this->sortieRepository->find($id);
+
+        if (!$sortie) {
+            throw new \Exception("Ooooops ! Sortie not found !");
+        }
+
+        return $sortie;
     }
 }

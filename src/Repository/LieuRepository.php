@@ -40,4 +40,14 @@ class LieuRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function findByNomContient(?string $recherche): array
+    {
+        return $this->createQueryBuilder('l')
+            ->andWhere('l.nom LIKE :recherche')
+            ->setParameter('recherche', '%'.$recherche.'%')
+            ->orderBy('l.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
+
