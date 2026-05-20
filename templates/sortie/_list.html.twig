@@ -25,13 +25,13 @@
                 <td>{{ sortie.organisateur.nom | capitalize }} {{ sortie.organisateur.prenom | slice(0, 1) }}.</td>
                 <td>
                 {% if sortie.etat.value == "creee" and sortie.organisateur == app.user %}
-                    <a href="">Afficher</a>
+                    <a href="{{ path('sortie_create', {id: sortie.id}) }}">Afficher</a>
                     <a href="">Modifier</a>
                     <a href="">Publier</a>
                 {% endif %}
 
                 {% if sortie.etat.value == "publiee" %}
-                    <a href="">Afficher</a>
+                    <a href="{{ path('sortie_create', {id: sortie.id}) }}">Afficher</a>
                     {% if sortie.organisateur == app.user %}
                         <a href="">Annuler</a>
                     {% else %}
@@ -44,7 +44,7 @@
                 {% endif %}
 
                 {% if sortie.etat.value == "cloturee" %}
-                    <a href="">Afficher</a>
+                    <a href="{{ path('sortie_create', {id: sortie.id}) }}">Afficher</a>
                 {% endif %}
 
 
