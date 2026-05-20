@@ -11,7 +11,4 @@ enum Etat: string
     case Terminee = 'terminee';
     case Archivee = 'archivee';
     case Annulee = 'annulee';
-
-
-
 }
