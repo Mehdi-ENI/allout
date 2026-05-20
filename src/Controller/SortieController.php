@@ -23,8 +23,8 @@ final class SortieController extends AbstractController
         $sortieForm = $this->createForm(SortieType::class, $sortie);
         $sortieForm->handleRequest($request);
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
-//            // Organisateur connecté
-//            $sortie->setOrganisateur($this->getUser());
+            // Organisateur connecté
+            $sortie->setOrganisateur($this->getUser());
 
             try {
 

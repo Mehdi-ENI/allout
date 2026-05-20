@@ -53,12 +53,12 @@ class SortieType extends AbstractType
                 'label' => 'Informations',
                 'required' => false,
             ])
-            ->add('organisateur', EntityType::class, [
-                'class' => Participant::class,
-                'choice_label' => 'id',
-                'placeholder' => 'Choisissez un organisateur',
-                'label' => 'Organisateur',
-            ])
+//            ->add('organisateur', EntityType::class, [
+//                'class' => Participant::class,
+//                'choice_label' => 'id',
+//                'placeholder' => 'Choisissez un organisateur',
+//                'label' => 'Organisateur',
+//            ])//--------- c'est l'utilisateur connecté-----------
             ->add('lieu', EntityType::class, [
                 'class' => Lieu::class,
                 'choice_label' => 'nom',

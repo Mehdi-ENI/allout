@@ -63,6 +63,9 @@ class Sortie
     #[ORM\Column]
     private ?bool $active = false;
 
+    #[ORM\Column]
+    private ?bool $annulee = false;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
@@ -147,38 +150,31 @@ class Sortie
 
     public function getEtat(): Etat
     {
+        if ($this->annulee) {
+            return Etat::Annulee;
+        }
+
         $now = new \DateTime();
 
-        // sortie désactivée
-        if (!$this->active) {
-            return Etat::Creee;
-        }
-
-        // sortie créée mais pas publiée
-        if ($this->active && $this->dateHeureDebut === null) {
-            return Etat::Creee;
-        }
-
-        // clôturée
-        if ($now > $this->dateLimiteInscription && $now < $this->dateHeureDebut) {
-            return Etat::Cloturee;
-        }
-
-        // en cours
         $dateFin = (clone $this->dateHeureDebut)
             ->add($this->duree);
 
-        if ($now >= $this->dateHeureDebut && $now <= $dateFin) {
+        if (!$this->active) {
+            return Etat::Creee;
+        } elseif ($this->etat === Etat::Creee &&$now < $this->dateLimiteInscription) {
+            return Etat::Publiee;
+        } elseif ($now > $this->dateLimiteInscription && $now < $this->dateHeureDebut) {
+            return Etat::Cloturee;
+        } elseif ($now >= $this->dateHeureDebut && $now <= $dateFin) {
             return Etat::EnCours;
-        }
-
-        // terminée
-        if ($now > $dateFin) {
+        } elseif ($now > $dateFin && $now <= $dateFin->modify('+30 day')) {
             return Etat::Terminee;
+        } elseif ($now > $dateFin->modify('+30 day')) {
+            return Etat::Archivee;
         }
 
-        // publiée
-        return Etat::Publiee;
+        return $this->etat;
+
     }
 
 //    public function setEtat(Etat $etat): static
@@ -256,6 +252,18 @@ class Sortie
     public function setActive(bool $active): static
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    public function isAnnulee(): ?bool
+    {
+        return $this->annulee;
+    }
+
+    public function setAnnulee(bool $annulee): static
+    {
+        $this->annulee = $annulee;
 
         return $this;
     }
