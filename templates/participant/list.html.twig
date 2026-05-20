@@ -27,8 +27,9 @@
                     <td>Désactivé</td>
                 {% endif %}
                                 <td>
-                                   <a class="btn btn-danger href="{{ path('participant_delete', {'id': participant.id}) }}">Delete</a>
-                                   <a class="btn btn-primary href="{{ path('participant_detail', {'id': participant.id}) }}">edit</a>
+                                   <a class="btn btn-danger" href="{{ path('participant_delete', {'id': participant.id}) }}">Delete</a>
+                                   <a class="btn btn-primary" href="{{ path('participant_detail', {'id': participant.id}) }}">View</a>
+                                    {# Bouton de desactivation #}
                                </td>
             </tr>
         {% else %}
