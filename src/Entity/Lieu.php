@@ -6,8 +6,11 @@ use App\Repository\LieuRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: LieuRepository::class)]
+#[UniqueEntity(fields: ['nom', 'ville'], message: 'Ce lieu existe déjà dans cette ville')]
 class Lieu
 {
     #[ORM\Id]
@@ -16,15 +19,27 @@ class Lieu
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom du lieu est obligatoire')]
+    #[Assert\Length(max: 255, maxMessage: 'Le nom du lieu ne peut pas dépasser {{ limit }} caractères')]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'La rue est obligatoire')]
+    #[Assert\Length(max: 255, maxMessage: 'La rue ne peut pas dépasser {{ limit }} caractères')]
     private ?string $rue = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Range(
+        min: -90,
+        max: 90,
+        notInRangeMessage: 'La latitude doit être entre {{ min }} et {{ max }}')]
     private ?float $latitude = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Range(
+        min: -180,
+        max: 180,
+        notInRangeMessage: 'La longitude doit être entre {{ min }} et {{ max }}')]
     private ?float $longitude = null;
 
     /**
@@ -35,6 +50,7 @@ class Lieu
 
     #[ORM\ManyToOne(inversedBy: 'lieus')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message: 'La ville est obligatoire')]
     private ?Ville $ville = null;
 
     public function __construct()
