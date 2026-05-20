@@ -3,18 +3,21 @@
 namespace App\Service;
 
 use App\Entity\Sortie;
+use App\Enum\Etat;
 use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 
 class SortieService
 {
-    public function __construct(private EntityManagerInterface         $entityManager,
-                                private readonly SortieRepository      $sortieRepository,
-                                private Security                       $security,
-                                private readonly ParticipantRepository $participantRepository)
+    public function __construct(private readonly EntityManagerInterface $entityManager,
+                                private readonly SortieRepository       $sortieRepository,
+                                private readonly Security               $security,
+                                private readonly ParticipantRepository  $participantRepository)
     {
     }
 
@@ -43,53 +46,47 @@ class SortieService
 
     public function inscription(int $id): void
     {
-        $sortie = $this->sortieRepository->find($id);
-        if (!$sortie) {
-            throw new \Exception("Ooooops ! Sortie not found !");
+        [$sortie, $participant] = $this->resolveContext($id);
+
+        if ($sortie->getEtat() !== Etat::Publiee || $sortie->getParticipants()->contains($participant)) {
+            throw new \Exception("Inscription non autorisée pour cette sortie.");
         }
 
-        $currentUser = $this->security->getUser();
-        if (!$currentUser) {
-            throw new \Exception("Ooooops ! Vous devez être connecté !");
-        }
-
-        $participant = $this->participantRepository->findOneBy(['email' => $currentUser->getUserIdentifier()]);
-        if (!$participant) {
-            throw new \Exception("Ooooops ! Participant non trouvé");
-        }
-
-        if ($sortie->getEtat()->value == "publiee" && !$sortie->getParticipants()->contains($participant)) {
-            $sortie->addParticipant($participant);
-            $this->entityManager->persist($sortie);
-            $this->entityManager->flush();
-        } else {
-            throw new \Exception("Ooooops ! Inscription non autorisée !");
-        }
+        $sortie->addParticipant($participant);
+        $this->entityManager->persist($sortie);
+        $this->entityManager->flush();
     }
 
     public function desistement(int $id): void
     {
+        [$sortie, $participant] = $this->resolveContext($id);
+
+        if ($sortie->getEtat() !== Etat::Publiee || !$sortie->getParticipants()->contains($participant)) {
+            throw new \Exception("Désistement non autorisé pour cette sortie.");
+        }
+
+        $sortie->removeParticipant($participant);
+        $this->entityManager->persist($sortie);
+        $this->entityManager->flush();
+    }
+
+    private function resolveContext(int $id): array
+    {
         $sortie = $this->sortieRepository->find($id);
         if (!$sortie) {
-            throw new \Exception("Ooooops ! Sortie not found !");
+            throw new NotFoundHttpException("Sortie introuvable.");
         }
 
         $currentUser = $this->security->getUser();
         if (!$currentUser) {
-            throw new \Exception("Ooooops ! Vous devez être connecté !");
+            throw new AccessDeniedException("Vous devez être connecté.");
         }
 
         $participant = $this->participantRepository->findOneBy(['email' => $currentUser->getUserIdentifier()]);
         if (!$participant) {
-            throw new \Exception("Ooooops ! Participant non trouvé");
+            throw new NotFoundHttpException("Participant introuvable.");
         }
 
-        if ($sortie->getEtat()->value == "publiee" && $sortie->getParticipants()->contains($participant)) {
-            $sortie->removeParticipant($participant);
-            $this->entityManager->persist($sortie);
-            $this->entityManager->flush();
-        } else {
-            throw new \Exception("Ooooops ! Désistement non autorisée !");
-        }
+        return [$sortie, $participant];
     }
 }
