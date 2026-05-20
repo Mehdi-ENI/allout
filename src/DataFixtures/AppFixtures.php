@@ -16,55 +16,94 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-
         $site = new Site();
         $site->setNom('Test');
-
         $manager->persist($site);
-        $manager->flush();
 
         $ville = new Ville();
         $ville->setNom('Test');
         $ville->setCodePostal('12345');
         $manager->persist($ville);
-        $manager->flush();
 
         $lieu = new Lieu();
         $lieu->setNom('Test');
         $lieu->setRue('Test');
         $lieu->setVille($ville);
         $manager->persist($lieu);
+
+        $organisateur1 = new Participant();
+        $organisateur1->setNom('Dumitrescu')
+            ->setPrenom('Diana')
+            ->setEmail('dd@test.com')
+            ->setPassword(password_hash('test', PASSWORD_BCRYPT))
+            ->setActif(true)
+            ->setTelephone('0123456789')
+            ->setRoles(['ROLE_USER'])
+            ->setSite($site);
+        $manager->persist($organisateur1);
+
+        $organisateur2 = new Participant();
+        $organisateur2->setNom('Forveille')
+            ->setPrenom('Erwan')
+            ->setEmail('ef@test.com')
+            ->setPassword(password_hash('test', PASSWORD_BCRYPT))
+            ->setActif(true)
+            ->setTelephone('0123456789')
+            ->setRoles(['ROLE_USER'])
+            ->setSite($site);
+        $manager->persist($organisateur2);
+
+        $organisateur3 = new Participant();
+        $organisateur3->setNom('Rochereau')
+            ->setPrenom('Mehdi')
+            ->setEmail('mr@test.com')
+            ->setPassword(password_hash('test', PASSWORD_BCRYPT))
+            ->setActif(true)
+            ->setTelephone('0123456789')
+            ->setRoles(['ROLE_USER'])
+            ->setSite($site);
+        $manager->persist($organisateur3);
+
+        $organisateur4 = new Participant();
+        $organisateur4->setNom('Tieliehin')
+            ->setPrenom('Mykhailo')
+            ->setEmail('mt@test.com')
+            ->setPassword(password_hash('test', PASSWORD_BCRYPT))
+            ->setActif(true)
+            ->setTelephone('0123456789')
+            ->setRoles(['ROLE_USER'])
+            ->setSite($site);
+        $manager->persist($organisateur4);
+
+        $admin = new Participant();
+        $admin->setNom('Admin')
+            ->setPrenom('Admin')
+            ->setEmail('admin@test.com')
+            ->setPassword(password_hash('admin', PASSWORD_BCRYPT))
+            ->setActif(true)
+            ->setTelephone('0123456789')
+            ->setRoles(['ROLE_ADMIN'])
+            ->setSite($site);
+        $manager->persist($admin);
+
         $manager->flush();
-
-        $organisateur = new Participant();
-        $organisateur->setNom('Test');
-        $organisateur->setPrenom('User');
-        $organisateur->setEmail('orga@test.com');
-        $organisateur->setPassword(password_hash('test', PASSWORD_BCRYPT));
-        $organisateur->setActif(true);
-        $organisateur->setTelephone('0123456789');
-
-        $organisateur->setRoles(['ROLE_USER']);
-        $organisateur->setActif(true);
-        $organisateur->setSite($site);
-
-        $manager->persist($organisateur);
 
         $faker = Factory::create('fr_FR');
 
         for ($i = 0; $i < 20; $i++) {
 
             $sortie = new Sortie();
-            $sortie->setNom($faker->sentence(3))
+            $sortie
+                ->setNom($faker->sentence(3))
                 ->setDateHeureDebut($faker->dateTimeBetween('-1 month', '+1 month'))
-                ->setDuree(new \DateInterval('PT' . max(1, $faker->numberBetween(1, 5)) . 'H')) // Durée en minutes
+                ->setDuree(new \DateInterval('PT' . max(1, $faker->numberBetween(1, 5)) . 'H'))
                 ->setDateLimiteInscription($faker->dateTimeBetween('-1 month', '+1 month'))
-                ->setNbInscriptionsMax($faker->numberBetween(10, 100))
+                ->setNbInscriptionsMax($faker->numberBetween(10, 20))
                 ->setInfosSortie($faker->paragraph())
-                ->setOrganisateur($organisateur);
-            $sortie->setSite($site);
-            dump($sortie->getSite());
-            $sortie->setLieu($lieu);
+                ->setOrganisateur($faker->randomElement([$organisateur1, $organisateur2, $organisateur3, $organisateur4]))
+                ->addParticipant($faker->randomElement([$organisateur1, $organisateur2, $organisateur3, $organisateur4]))
+                ->setSite($site)
+                ->setLieu($lieu);
 
             $manager->persist($sortie);
         }
