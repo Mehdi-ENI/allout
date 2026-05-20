@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Update profile</h1>
+
+    {{ form_errors(updateForm) }}
+    {{ form_start(updateForm) }}
+    {{ form_row(updateForm.prenom) }}
+    {{ form_row(updateForm.nom) }}
+    {{ form_row(updateForm.pseudo) }}
+    {{ form_row(updateForm.roles) }}
+    {{ form_row(updateForm.telephone) }}
+    {{ form_row(updateForm.email) }}
+    {{ form_row(updateForm.site) }}
+
+
+    <button type="submit" class="btn btn-success ">Update</button>
+    {{ form_end(updateForm) }}
+{% endblock %}
+

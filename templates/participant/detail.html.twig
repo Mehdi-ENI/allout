@@ -5,6 +5,9 @@
 <section>
     <article>
         <div>
+            {% if participant.pseudo %}
+                <p>Pseudo : {{ participant.pseudo }}</p>
+            {% endif %}
             <p>E-Mail : {{ participant.email }}</p>
             <p> Telephone : {{ participant.telephone }}</p>
             <ul>Rôles :
@@ -12,7 +15,7 @@
                     <li>{{ role }}</li>
                 {% endfor %}
             </ul>
-            {# Bouton de modification #}
+            <a class="btn btn-primary" href="{{ path('participant_update', {'id': participant.id}) }}">Update Profil</a>
         </div>
     </article>
 </section>

@@ -2,6 +2,10 @@ body {
     background-color: skyblue;
 }
 
+ul, li {
+    list-style: none;
+}
+
 .card {
     border-radius: 12px;
 }
