@@ -103,7 +103,9 @@ class AppFixtures extends Fixture
                 ->setOrganisateur($faker->randomElement([$organisateur1, $organisateur2, $organisateur3, $organisateur4]))
                 ->addParticipant($faker->randomElement([$organisateur1, $organisateur2, $organisateur3, $organisateur4]))
                 ->setSite($site)
-                ->setLieu($lieu);
+                ->setLieu($lieu)
+                ->setActive($faker->boolean(80)) // 80% de chances d'être active
+                ->setAnnulee($faker->boolean(20)); // 20% de chances d'être annulée
 
             $manager->persist($sortie);
         }
