@@ -33,6 +33,28 @@ class ParticipantRepository extends ServiceEntityRepository implements PasswordU
         $this->getEntityManager()->flush();
     }
 
+    public function desactivateParticipant(int $id) {
+        $qb = $this->createQueryBuilder('p')
+            ->update()
+            ->set('p.actif', ':actif')
+            ->where('p.id = :id')
+            ->setParameter('actif', false)
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->execute();
+    }
+
+    public function activateParticipant(int $id) {
+        $qb = $this->createQueryBuilder('p')
+            ->update()
+            ->set('p.actif', ':actif')
+            ->where('p.id = :id')
+            ->setParameter('actif', true)
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->execute();
+    }
+
     //    /**
     //     * @return Participant[] Returns an array of Participant objects
     //     */

@@ -6,8 +6,11 @@ use App\Repository\SiteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SiteRepository::class)]
+#[UniqueEntity(fields: ['nom'], message: 'Ce site existe déjà')]
 class Site
 {
     #[ORM\Id]
@@ -16,6 +19,8 @@ class Site
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom du site est obligatoire')]
+    #[Assert\Length(max: 255, maxMessage: 'Le nom du site ne peut pas dépasser {{ limit }} caractères')]
     private ?string $nom = null;
 
     /**

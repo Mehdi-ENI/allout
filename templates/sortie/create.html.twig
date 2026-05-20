@@ -5,115 +5,35 @@
 {% endblock %}
 
 {% block body %}
-
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card shadow-sm">
+
                     <div class="card-header bg-primary text-white">
                         <h2 class="mb-0">Créer une sortie</h2>
                     </div>
 
                     <div class="card-body">
                         {{ form_start(sortieForm) }}
-                        <div class="mb-3">
-                            {{ form_label(sortieForm.nom) }}
-                            {{ form_widget(sortieForm.nom, {
-                                attr: {
-                                    class: 'form-control'
-                                }
-                            }) }}
-                            {{ form_errors(sortieForm.nom) }}
+                        {{ form_row(sortieForm.nom) }}
+                        <div class="row">
+                            <div class="col-md-6">{{ form_row(sortieForm.dateHeureDebut) }}</div>
+                            <div class="col-md-6">{{ form_row(sortieForm.dateLimiteInscription) }}</div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                {{ form_label(sortieForm.dateHeureDebut) }}
-                                {{ form_widget(sortieForm.dateHeureDebut, {
-                                    attr: {
-                                        class: 'form-control'
-                                    }
-                                }) }}
-                                {{ form_errors(sortieForm.dateHeureDebut) }}
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                {{ form_label(sortieForm.dateLimiteInscription) }}
-                                {{ form_widget(sortieForm.dateLimiteInscription, {
-                                    attr: {
-                                        class: 'form-control'
-                                    }
-                                }) }}
-                                {{ form_errors(sortieForm.dateLimiteInscription) }}
-                            </div>
+                            <div class="col-md-4">{{ form_row(sortieForm.duree) }}</div>
+                            <div class="col-md-4">{{ form_row(sortieForm.nbInscriptionsMax) }}</div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                {{ form_label(sortieForm.duree) }}
-                                {{ form_widget(sortieForm.duree, {
-                                    attr: {
-                                        class: 'form-control'
-                                    }
-                                }) }}
-                                <div class="form-text">
-                                    Durée en jours/heures/minutes
-                                </div>
-                                {{ form_errors(sortieForm.duree) }}
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                {{ form_label(sortieForm.nbInscriptionsMax) }}
-                                {{ form_widget(sortieForm.nbInscriptionsMax, {
-                                    attr: {
-                                        class: 'form-control'
-                                    }
-                                }) }}
-                                {{ form_errors(sortieForm.nbInscriptionsMax) }}
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form_label(sortieForm.infosSortie) }}
-                            {{ form_widget(sortieForm.infosSortie, {
-                                attr: {
-                                    class: 'form-control',
-                                    rows: 5
-                                }
-                            }) }}
-                            {{ form_errors(sortieForm.infosSortie) }}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form_label(sortieForm.lieu) }}
-                            {{ form_widget(sortieForm.lieu, {
-                                attr: {
-                                    class: 'form-select'
-                                }
-                            }) }}
-                            {{ form_errors(sortieForm.lieu) }}
-                        </div>
-
-                        <div class="mb-4">
-                            {{ form_label(sortieForm.site) }}
-                            {{ form_widget(sortieForm.site, {
-                                attr: {
-                                    class: 'form-select'
-                                }
-                            }) }}
-                            {{ form_errors(sortieForm.site) }}
-                        </div>
+                        {{ form_row(sortieForm.infosSortie) }}
+                        {{ form_row(sortieForm.lieu) }}
+                        {{ form_row(sortieForm.site) }}
 
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ path('sortie_list') }}"
-                               class="btn btn-secondary">
-                                Retour
-                            </a>
-
-                            <button type="submit"
-                                    class="btn btn-primary">
-                                Créer
-                            </button>
+                            <a href="{{ path('sortie_list') }}" class="btn btn-secondary">Retour</a>
+                            <button type="submit" class="btn btn-primary">Créer</button>
                         </div>
 
                         {{ form_end(sortieForm) }}

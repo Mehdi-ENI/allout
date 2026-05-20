@@ -29,7 +29,11 @@
                                 <td>
                                    <a class="btn btn-danger" href="{{ path('participant_delete', {'id': participant.id}) }}">Delete</a>
                                    <a class="btn btn-primary" href="{{ path('participant_detail', {'id': participant.id}) }}">View</a>
-                                    {# Bouton de desactivation #}
+                                    {% if participant.actif == true %}
+                                        <a class="btn btn-warning" href="{{ path('participant_desactivate', {'id': participant.id}) }}">Desactivate</a>
+                                    {% else %}
+                                        <a class="btn btn-success" href="{{ path('participant_activate', {'id': participant.id}) }}">Reactivate</a>
+                                    {% endif %}
                                </td>
             </tr>
         {% else %}
