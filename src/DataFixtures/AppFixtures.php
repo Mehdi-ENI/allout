@@ -92,16 +92,24 @@ class AppFixtures extends Fixture
 
         for ($i = 0; $i < 20; $i++) {
 
+            $dateLimiteInscription = $faker->dateTimeBetween('-1 month', '+1 month');
+            $dateHeureDebut = $faker->dateTimeBetween($dateLimiteInscription, '+2 months');
+            $organisateur = $faker->randomElement([$organisateur1, $organisateur2, $organisateur3, $organisateur4]);
+            $autresParticipants = array_filter(
+                [$organisateur1, $organisateur2, $organisateur3, $organisateur4],
+                fn($p) => $p !== $organisateur
+            );
+
             $sortie = new Sortie();
             $sortie
                 ->setNom($faker->sentence(3))
-                ->setDateHeureDebut($faker->dateTimeBetween('-1 month', '+1 month'))
                 ->setDuree(new \DateInterval('PT' . max(1, $faker->numberBetween(1, 5)) . 'H'))
-                ->setDateLimiteInscription($faker->dateTimeBetween('-1 month', '+1 month'))
+                ->setDateLimiteInscription($dateLimiteInscription)
+                ->setDateHeureDebut($dateHeureDebut)
                 ->setNbInscriptionsMax($faker->numberBetween(10, 20))
                 ->setInfosSortie($faker->paragraph())
-                ->setOrganisateur($faker->randomElement([$organisateur1, $organisateur2, $organisateur3, $organisateur4]))
-                ->addParticipant($faker->randomElement([$organisateur1, $organisateur2, $organisateur3, $organisateur4]))
+                ->setOrganisateur($organisateur)
+                ->addParticipant($faker->randomElement($autresParticipants))
                 ->setSite($site)
                 ->setLieu($lieu)
                 ->setActive($faker->boolean(80)) // 80% de chances d'être active

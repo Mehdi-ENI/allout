@@ -52,8 +52,6 @@ final class SortieController extends AbstractController
                          SiteRepository   $siteRepository,
                          Request          $request): Response
     {
-        dump($request->query->all());
-        $sortie = $sortieRepository->findAll();
         $sortie = $sortieRepository->findWithFilters($request->query->all());
         $sites = $siteRepository->findAll();
 
@@ -68,7 +66,6 @@ final class SortieController extends AbstractController
     {
         try {
             $sortie = $sortieService->getSortieDetail($id);
-
             return $this->render('sortie/detail.html.twig', [
                 'sortie' => $sortie
             ]);
@@ -78,4 +75,27 @@ final class SortieController extends AbstractController
         }
     }
 
+    #[Route('/{id}/inscription', name: 'inscription', requirements: ['id' => '\d+'])]
+    public function inscription(Request $request, SortieService $sortieService, int $id): Response
+    {
+        try {
+            $sortieService->inscription($id);
+            return $this->redirectToRoute('sortie_list');
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('sortie_list');
+        }
+    }
+
+    #[Route('/{id}/desistement', name: 'desistement', requirements: ['id' => '\d+'])]
+    public function desistement(Request $request, SortieService $sortieService, int $id): Response
+    {
+        try {
+            $sortieService->desistement($id);
+            return $this->redirectToRoute('sortie_list');
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('sortie_list');
+        }
+    }
 }
