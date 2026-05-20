@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Sortie;
 use App\Form\SortieType;
+use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
 use App\Service\SortieService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -48,12 +49,18 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/list', name: 'list')]
-    public function list(SortieRepository $sortieRepository): Response
+    public function list(SortieRepository $sortieRepository,
+                         SiteRepository   $siteRepository,
+                         Request          $request): Response
     {
-        $sortie = new Sortie();
-        $sortie= $sortieRepository->findAll();
+        dump($request->query->all());
+        $sortie = $sortieRepository->findAll();
+        $sortie = $sortieRepository->findWithFilters($request->query->all());
+        $sites = $siteRepository->findAll();
+
         return $this->render('sortie/list.html.twig', [
             'sorties' => $sortie,
+            'sites' => $sites
         ]);
     }
 

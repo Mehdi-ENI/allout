@@ -3,33 +3,63 @@
 {% block body %}
     <h1>Sorties</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom</th>
-                <th>Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for sortie in sorties %}
-            <tr>
-                <td>{{ sortie.id }}</td>
-                <td>{{ sortie.nom }}</td>
-                <td>{{ sortie.dateHeureDebut ? sortie.dateHeureDebut|date('Y-m-d') : '' }}</td>
-{#                <td>#}
-{#                    <a href="{{ path('sortie_detail', {'id': sortie.id}) }}">show</a>#}
-{#                    <a href="{{ path('sortie_update', {'id': sortie.id}) }}">edit</a>#}
-{#                </td>#}
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">No records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div>Filtrer les sorties</div>
+
+    <form action="{{ path('sortie_list') }}" method="get">
+
+        <label>Site :
+            <select name="site" data-turbo-frame="liste-sorties">
+                <option value="" {{ app.request.query.get('site') is empty ? 'selected' }}>Tous les sites</option>
+                {% for site in sites %}
+                    <option value="{{ site.nom }}" {{ app.request.query.get('site') == site.nom ? 'selected' }}>
+                        {{ site.nom }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>Le nom de la sortie contient :
+            <input type="text" name="nom" value="{{ app.request.query.get('nom') }}">
+        </label>
+
+        <label> Entre
+            <input type="datetime-local" name="date_debut" value="{{ app.request.query.get('date_debut') }}">
+        </label>
+
+        <label> et
+            <input type="datetime-local" name="date_fin" value="{{ app.request.query.get('date_fin') }}">
+        </label>
+
+        <label>
+            <input type="checkbox" name="sorties_organisees" value="1"
+                {{ app.request.query.get('sorties_organisees') ? 'checked' }}>
+            Sorties dont je suis l'organisateur/trice
+        </label>
+
+        <label>
+            <input type="checkbox" name="sorties_inscrits" value="1"
+                {{ app.request.query.get('sorties_inscrits') ? 'checked' }}>
+            Sorties auxquelles je suis inscrit/e
+        </label>
+
+        <label>
+            <input type="checkbox" name="sorties_non_inscrits" value="1"
+                {{ app.request.query.get('sorties_non_inscrits') ? 'checked' }}>
+            Sorties auxquelles je ne suis pas inscrit/e
+        </label>
+
+        <label>
+            <input type="checkbox" name="sorties_passees" value="1"
+                {{ app.request.query.get('sorties_passees') ? 'checked' }}>
+            Sorties passées
+        </label>
+
+        <button type="submit">Rechercher</button>
+    </form>
+
+    <turbo-frame id="liste-sorties">
+        {% include 'sortie/_list.html.twig' %}
+    </turbo-frame>
 
     <a href="{{ path('sortie_create') }}">Create new</a>
 {% endblock %}
