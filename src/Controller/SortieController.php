@@ -7,6 +7,7 @@ use App\Form\SortieType;
 use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
 use App\Service\SortieService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -76,6 +77,33 @@ final class SortieController extends AbstractController
             $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute('sortie_list');
         }
+    }
+
+    #[Route('/{id}/update', name: 'update', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function update(int $id,
+                           Request $request,
+                           SortieService $sortieService,
+                           EntityManagerInterface $entityManager): Response
+    {
+        $sortie = $sortieService->getSortieDetail($id);
+        $form = $this->createForm(SortieType::class, $sortie);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            try {
+                $entityManager->flush();
+                $this->addFlash('success', 'Sortie mise à jour avec succès');
+                return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+            } catch (\Exception $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
+
+        }
+
+        return $this->render('sortie/update.html.twig', [
+            'sortieForm' => $form,
+            'sortie' => $sortie,
+        ]);
     }
 
 }
