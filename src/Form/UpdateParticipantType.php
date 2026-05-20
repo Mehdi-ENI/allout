@@ -6,9 +6,11 @@ use App\Entity\Participant;
 use App\Entity\Site;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Validator\Constraints\Image;
 
 class UpdateParticipantType extends AbstractType
 {
@@ -33,6 +35,7 @@ class UpdateParticipantType extends AbstractType
                 'class' => Site::class,
                 'choice_label' => 'nom',
             ])
+            ->add('image', FileType::class, ['mapped' => false,'constraints'=> [new Image(maxSize: '5M', mimeTypes: ["image/jpg", "image/png"], maxSizeMessage: "5M max !")]])
         ;
     }
 
