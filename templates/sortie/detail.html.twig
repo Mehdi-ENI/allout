@@ -61,6 +61,18 @@
 
             <div class="card-footer text-end">
 
+                {% if sortie.etat.value == "publiee" %}
+                    {% if sortie.organisateur == app.user %}
+                        <a class="btn btn-danger" href="">Annuler</a>
+                    {% else %}
+                        {% if sortie.participants.contains(app.user) %}
+                            <a class="btn btn-warning" href="{{ path('sortie_desistement', {id: sortie.id}) }}">Se désister</a>
+                        {% else %}
+                            <a class="btn btn-primary" href="{{ path('sortie_inscription', {id: sortie.id}) }}">S'inscrire</a>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+
                 <a href="{{ path('sortie_list') }}"
                    class="btn btn-secondary">
                     Retour
