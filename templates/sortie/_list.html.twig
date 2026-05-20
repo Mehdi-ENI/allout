@@ -2,22 +2,36 @@
     <table class="table">
         <thead>
         <tr>
-            <th>Id</th>
-            <th>Nom</th>
-            <th>Date</th>
+            <th>Nom de la sortie</th>
+            <th>Date de la sortie</th>
+            <th>Clotûre</th>
+            <th>Inscrits/places</th>
+            <th>État</th>
+            <th>Inscrit</th>
+            <th>Organisateur</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         {% for sortie in sorties %}
             <tr>
-                <td>{{ sortie.id }}</td>
                 <td>{{ sortie.nom }}</td>
-                <td>{{ sortie.dateHeureDebut ? sortie.dateHeureDebut|date('Y-m-d') : '' }}</td>
-                {#                <td>#}
-                {#                    <a href="{{ path('sortie_detail', {'id': sortie.id}) }}">show</a>#}
-                {#                    <a href="{{ path('sortie_update', {'id': sortie.id}) }}">edit</a>#}
-                {#                </td>#}
+                <td>{{ sortie.dateHeureDebut|date('Y-m-d H:i') }}</td>
+                <td>{{ sortie.dateLimiteInscription|date('Y-m-d') }}</td>
+                <td>{{ sortie.participants | length }}/{{ sortie.nbInscriptionsMax }}</td>
+                <td>
+                    {#                {{ sortie.etat }} #}
+                </td>
+                <td>{{ sortie.participants.contains(app.user) ? 'X' : '' }}</td>
+                <td>{{ sortie.organisateur.nom | capitalize }} {{ sortie.organisateur.prenom | slice(0, 1) }}.</td>
+                <td>
+                    {#                    <a href="{{ path('sortie_detail', {'id': sortie.id}) }}">Afficher</a> #}
+                    {#                    <a href="{{ path('sortie_update', {'id': sortie.id}) }}">Modifier</a> #}
+                    {#                    <a href="{{ path('sortie_update', {'id': sortie.id}) }}">Publier</a> #}
+                    {#                    <a href="{{ path('sortie_update', {'id': sortie.id}) }}">S'inscrire</a> #}
+                    {#                    <a href="{{ path('sortie_update', {'id': sortie.id}) }}">Se désister</a> #}
+                    {#                    <a href="{{ path('sortie_update', {'id': sortie.id}) }}">Annuler</a> #}
+                </td>
             </tr>
         {% else %}
             <tr>
