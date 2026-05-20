@@ -1,8 +1,13 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Sorties</h1>
-
+    <div>Date du jour : {{ 'now' | date('d/m/y') }}</div>
+    <div>Participant :
+    {% if app.user %}
+        {{ app.user.prenom | capitalize }} {{ app.user.nom | slice (0,1) }}.</div>
+    {% else %}
+        Non connecté
+    {% endif %}
     <div>Filtrer les sorties</div>
 
     <form action="{{ path('sortie_list') }}" method="get">
