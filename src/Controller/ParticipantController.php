@@ -25,6 +25,7 @@ final class ParticipantController extends AbstractController
     }
 
     #[Route('/{id}', name: 'detail', requirements: ['id' => '[0-9]+'])]
+    #[IsGranted("ROLE_ADMIN")]
     public function detail(int $id, ParticipantRepository $participantRepository): Response
     {
         $participant = $participantRepository->find($id);
@@ -39,6 +40,7 @@ final class ParticipantController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'delete', requirements: ['id'=>'\d+'])]
+    #[IsGranted("ROLE_ADMIN")]
     public function delete(EntityManagerInterface $entityManager, Participant $participant ): Response
     {
         $entityManager->remove($participant);
@@ -67,6 +69,7 @@ final class ParticipantController extends AbstractController
     }
 
     #[Route('/{id}/update', name: 'update', methods: ["GET", "POST"])]
+    #[IsGranted("ROLE_ADMIN")]
     public function update(int                    $id,
                            ParticipantRepository        $participantRepository,
                            Request                $request,
