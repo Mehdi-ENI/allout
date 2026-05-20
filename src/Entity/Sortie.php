@@ -151,7 +151,7 @@ class Sortie
 
         // sortie désactivée
         if (!$this->active) {
-            return Etat::Annulee;
+            return Etat::Creee;
         }
 
         // sortie créée mais pas publiée

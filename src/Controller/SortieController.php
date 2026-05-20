@@ -32,7 +32,7 @@ final class SortieController extends AbstractController
 
                 $this->addFlash('success', 'Sortie créée avec succès');
 
-                return $this->redirectToRoute('sortie_list');
+                return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
 
             } catch (\Exception $e) {
 
@@ -41,7 +41,6 @@ final class SortieController extends AbstractController
             }
 
         }
-
 
         return $this->render('sortie/create.html.twig', [
             'sortieForm' => $sortieForm->createView(),
@@ -62,6 +61,21 @@ final class SortieController extends AbstractController
             'sorties' => $sortie,
             'sites' => $sites
         ]);
+    }
+
+    #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function detail(Request $request, SortieService $sortieService, int $id): Response
+    {
+        try {
+            $sortie = $sortieService->getSortieDetail($id);
+
+            return $this->render('sortie/detail.html.twig', [
+                'sortie' => $sortie
+            ]);
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('sortie_list');
+        }
     }
 
 }
