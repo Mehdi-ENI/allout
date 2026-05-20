@@ -25,7 +25,6 @@ final class SortieController extends AbstractController
 //            // Organisateur connecté
 //            $sortie->setOrganisateur($this->getUser());
 
-
             try {
 
                 $sortieService->creerSortie($sortie);
@@ -36,7 +35,7 @@ final class SortieController extends AbstractController
 
             } catch (\Exception $e) {
 
-                dd($e->getMessage());
+//                dd($e->getMessage());
                 $this->addFlash('error', $e->getMessage());
             }
 

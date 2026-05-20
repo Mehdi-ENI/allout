@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use phpDocumentor\Reflection\PseudoTypes\Numeric_;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -18,15 +18,19 @@ class Sortie
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank(message: "Le nom est obligatoire.")]
+    #[Assert\Length(min: 3, max: 255, minMessage: "Le nom doit contenir au moins {{ min }} caractères.")]
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
+    #[Assert\GreaterThan("today", message: "La date de début doit être dans le futur.")]
     #[ORM\Column]
     private ?\DateTime $dateHeureDebut = null;
 
     #[ORM\Column]
     private ?\DateInterval $duree = null;
 
+    #[Assert\LessThan(propertyPath: "dateHeureDebut", message : "La date limite d'inscription doit être avant la date de début !")]
     #[ORM\Column]
     private ?\DateTime $dateLimiteInscription = null;
 
@@ -141,17 +145,48 @@ class Sortie
         return $this;
     }
 
-    public function getEtat(): ?Etat
+    public function getEtat(): Etat
     {
-        return $this->etat;
+        $now = new \DateTime();
+
+        // sortie désactivée
+        if (!$this->active) {
+            return Etat::Annulee;
+        }
+
+        // sortie créée mais pas publiée
+        if ($this->active && $this->dateHeureDebut === null) {
+            return Etat::Creee;
+        }
+
+        // clôturée
+        if ($now > $this->dateLimiteInscription && $now < $this->dateHeureDebut) {
+            return Etat::Cloturee;
+        }
+
+        // en cours
+        $dateFin = (clone $this->dateHeureDebut)
+            ->add($this->duree);
+
+        if ($now >= $this->dateHeureDebut && $now <= $dateFin) {
+            return Etat::EnCours;
+        }
+
+        // terminée
+        if ($now > $dateFin) {
+            return Etat::Terminee;
+        }
+
+        // publiée
+        return Etat::Publiee;
     }
 
-    public function setEtat(Etat $etat): static
-    {
-        $this->etat = $etat;
-
-        return $this;
-    }
+//    public function setEtat(Etat $etat): static
+//    {
+//        $this->etat = $etat;
+//
+//        return $this;
+//    }
 
     /**
      * @return Collection<int, Participant>
