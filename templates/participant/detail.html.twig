@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Profil de {{ participant.prenom }} {{ participant.nom }}</h1>
+<section>
+    <article>
+        <div>
+            <p>E-Mail : {{ participant.email }}</p>
+            <p> Telephone : {{ participant.telephone }}</p>
+            <ul>Rôles :
+                {% for role in participant.roles %}
+                    <li>{{ role }}</li>
+                {% endfor %}
+            </ul>
+            {# Bouton de modification #}
+        </div>
+    </article>
+</section>
+{% endblock %}
+

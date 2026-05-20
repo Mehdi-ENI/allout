@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Détail sortie
+{% endblock %}
+
+{% block body %}
+
+    <div class="container mt-5">
+
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">{{ sortie.nom }}</h2>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Date :</strong><br>
+                        {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <strong>Date limite d'inscription :</strong><br>
+                        {{ sortie.dateLimiteInscription|date('d/m/Y') }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Nombre max de participants :</strong><br>
+                        {{ sortie.nbInscriptionsMax }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <strong>Etat :</strong><br>
+                        {{ sortie.etat.label }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <strong>Lieu :</strong><br>
+                    {{ sortie.lieu.nom }}
+                </div>
+
+                <div class="mb-3">
+                    <strong>Informations :</strong><br>
+
+                    {% if sortie.infosSortie %}
+                        {{ sortie.infosSortie }}
+                    {% else %}
+                        <span class="text-muted">
+                        Aucune information complémentaire
+                    </span>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <div class="card-footer text-end">
+
+                <a href="{{ path('sortie_list') }}"
+                   class="btn btn-secondary">
+                    Retour
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
