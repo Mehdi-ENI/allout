@@ -20,7 +20,7 @@ class Ville
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le nom de la ville est obligatoire')]
-    #[Assert\Length(max: 255, maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères')]
+    #[Assert\Length(max: 255, maxMessage: 'Le nom de la ville ne peut pas dépasser {{ limit }} caractères')]
     private ?string $nom = null;
 
     #[ORM\Column(length: 5)]
