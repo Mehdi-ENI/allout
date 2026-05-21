@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <h1 class="mb-4">Mon profil</h1>
+
+        <div class="row g-4">
+
+            {# --- Informations du profil --- #}
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header fw-bold">Informations personnelles</div>
+                    <div class="card-body">
+                        {% if participant.image %}
+                            <img src="{{ asset('uploads/' ~ participant.image) }}"
+                                 alt="Photo de profil"
+                                 class="rounded-circle mb-3"
+                                 style="width:100px;height:100px;object-fit:cover;">
+                        {% endif %}
+
+                        <p><strong>Prénom :</strong> {{ participant.prenom }}</p>
+                        <p><strong>Nom :</strong> {{ participant.nom }}</p>
+                        {% if participant.pseudo %}
+                            <p><strong>Pseudo :</strong> {{ participant.pseudo }}</p>
+                        {% endif %}
+                        <p><strong>Email :</strong> {{ participant.email }}</p>
+                        <p><strong>Téléphone :</strong> {{ participant.telephone ?? '—' }}</p>
+                        <p><strong>Site :</strong> {{ participant.site.nom ?? '—' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {# --- Changement de mot de passe --- #}
+            <div class="col-md-6">
+                <div class="accordion" id="accordionPassword">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                           {# formulaire qui se déroule pour le mdp #}
+                            <button class="accordion-button {% if not formSubmitted %}collapsed{% endif %}"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapsePassword">
+                                 Changer mon mot de passe
+                            </button>
+                        </h2>
+                        <div id="collapsePassword"
+                             class="accordion-collapse collapse {% if formSubmitted %}show{% endif %}">
+                            <div class="accordion-body">
+
+                                {{ form_start(passwordForm)}}
+
+                                <div class="mb-3">
+                                    {{ form_label(passwordForm.currentPassword, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    {{ form_widget(passwordForm.currentPassword, {'attr': {'class': 'form-control' ~ (passwordForm.currentPassword.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                                    {% if passwordForm.currentPassword.vars.errors|length > 0 %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in passwordForm.currentPassword.vars.errors %}
+                                                {{ error.message }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ form_label(passwordForm.newPassword.first, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    {{ form_widget(passwordForm.newPassword.first, {'attr': {'class': 'form-control' ~ (passwordForm.newPassword.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ form_label(passwordForm.newPassword.second, null, {'label_attr': {'class': 'form-label'}}) }}
+                                    {{ form_widget(passwordForm.newPassword.second, {'attr': {'class': 'form-control' ~ (passwordForm.newPassword.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                                    {# Les erreurs du RepeatedType (ex: "les mots de passe ne correspondent pas")
+                                       remontent sur le champ parent newPassword, pas sur first/second #}
+                                    {% if passwordForm.newPassword.vars.errors|length > 0 %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in passwordForm.newPassword.vars.errors %}
+                                                {{ error.message }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100">
+                                    Modifier le mot de passe
+                                </button>
+
+                                {{ form_end(passwordForm) }}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

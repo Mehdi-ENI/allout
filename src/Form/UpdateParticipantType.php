@@ -29,7 +29,6 @@ class UpdateParticipantType extends AbstractType
             ->add('nom')
             ->add('prenom')
             ->add('telephone')
-            //->add('image')
             ->add('pseudo')
             ->add('site', EntityType::class, [
                 'class' => Site::class,

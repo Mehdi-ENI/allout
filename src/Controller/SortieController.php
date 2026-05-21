@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\DTO\AnnulationDTO;
 use App\Entity\Lieu;
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\AnnulationDTOType;
 use App\Form\LieuType;
@@ -15,7 +16,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/sortie', name: 'sortie_')]
 final class SortieController extends AbstractController
@@ -140,27 +143,47 @@ final class SortieController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/inscription', name: 'inscription', requirements: ['id' => '\d+'])]
+    #[Route('/{id}/inscription', name: 'inscription', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function inscription(Request $request, SortieService $sortieService, int $id): Response
     {
-        try {
-            $sortieService->inscription($id);
-            return $this->redirectToRoute('sortie_list');
-        } catch (\Exception $e) {
-            $this->addFlash('error', $e->getMessage());
+        if (!$this->isCsrfTokenValid('inscription' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token invalide.');
             return $this->redirectToRoute('sortie_list');
         }
+
+        /** @var Participant $participant */
+        $participant = $this->getUser();
+
+        try {
+            $sortieService->inscription($id, $participant);
+            $this->addFlash('success', 'Inscription confirmée.');
+        } catch (NotFoundHttpException|\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('sortie_list');
     }
 
-    #[Route('/{id}/desistement', name: 'desistement', requirements: ['id' => '\d+'])]
+    #[Route('/{id}/desistement', name: 'desistement', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function desistement(Request $request, SortieService $sortieService, int $id): Response
     {
-        try {
-            $sortieService->desistement($id);
-            return $this->redirectToRoute('sortie_list');
-        } catch (\Exception $e) {
-            $this->addFlash('error', $e->getMessage());
+        if (!$this->isCsrfTokenValid('desistement' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token invalide.');
             return $this->redirectToRoute('sortie_list');
         }
+
+        /** @var Participant $participant */
+        $participant = $this->getUser();
+
+        try {
+            $sortieService->desistement($id, $participant);
+            $this->addFlash('success', 'Désistement pris en compte.');
+        } catch (NotFoundHttpException|\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('sortie_list');
     }
 }
