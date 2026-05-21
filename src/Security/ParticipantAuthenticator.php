@@ -15,6 +15,9 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordC
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use App\Repository\ParticipantRepository;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 
 class ParticipantAuthenticator extends AbstractLoginFormAuthenticator
 {
@@ -22,7 +25,8 @@ class ParticipantAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
+    public function __construct(private UrlGeneratorInterface $urlGenerator,
+                                private ParticipantRepository $participantRepository)
     {
     }
 
@@ -33,10 +37,29 @@ class ParticipantAuthenticator extends AbstractLoginFormAuthenticator
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 
         return new Passport(
-            new UserBadge($email),
+            new UserBadge($email, function ($userIdentifier) {
+
+                $user = $this->participantRepository
+                    ->findOneBy(['email' => $userIdentifier]);
+
+                if (!$user) {
+                    throw new UserNotFoundException();
+                }
+
+                if (!$user->isActif()) {
+                    throw new CustomUserMessageAuthenticationException(
+                        'Your account is desactivate.'
+                    );
+                }
+
+                return $user;
+            }),
             new PasswordCredentials($request->getPayload()->getString('password')),
             [
-                new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
+                new CsrfTokenBadge(
+                    'authenticate',
+                    $request->getPayload()->getString('_csrf_token')
+                ),
                 new RememberMeBadge(),
             ]
         );

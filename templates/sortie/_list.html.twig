@@ -14,7 +14,7 @@
         </thead>
         <tbody>
         {% for sortie in sorties %}
-            {% if sortie.etat.value != "annulee" and sortie.etat.value != "archivee" %}
+            {% if sortie.etat.value != "annulee" and sortie.etat.value != "archivee" and (sortie.etat.value != "creee" or sortie.organisateur == app.user) %}
                 <tr>
                 <td>{{ sortie.nom }}</td>
                 <td>{{ sortie.dateHeureDebut|date('Y-m-d H:i') }}</td>
@@ -25,26 +25,26 @@
                 <td>{{ sortie.organisateur.nom | capitalize }} {{ sortie.organisateur.prenom | slice(0, 1) }}.</td>
                 <td>
                 {% if sortie.etat.value == "creee" and sortie.organisateur == app.user %}
-                    <a href="{{ path('sortie_create', {id: sortie.id}) }}">Afficher</a>
+                    <a href="{{ path('sortie_detail', {id: sortie.id}) }}">Afficher</a>
                     <a href="">Modifier</a>
                     <a href="">Publier</a>
                 {% endif %}
 
                 {% if sortie.etat.value == "publiee" %}
-                    <a href="{{ path('sortie_create', {id: sortie.id}) }}">Afficher</a>
+                    <a href="{{ path('sortie_detail', {id: sortie.id}) }}">Afficher</a>
                     {% if sortie.organisateur == app.user %}
                         <a href="">Annuler</a>
                     {% else %}
                         {% if sortie.participants.contains(app.user) %}
-                            <a href="">Se désister</a>
+                            <a href="{{ path('sortie_desistement', {id: sortie.id}) }}">Se désister</a>
                         {% else %}
-                            <a href="">S'inscrire</a>
+                            <a href="{{ path('sortie_inscription', {id: sortie.id}) }}">S'inscrire</a>
                         {% endif %}
                     {% endif %}
                 {% endif %}
 
-                {% if sortie.etat.value == "cloturee" %}
-                    <a href="{{ path('sortie_create', {id: sortie.id}) }}">Afficher</a>
+                {% if sortie.etat.value == "cloturee" or sortie.etat.value == "en_cours" %}
+                    <a href="{{ path('sortie_detail', {id: sortie.id}) }}">Afficher</a>
                 {% endif %}
 
 

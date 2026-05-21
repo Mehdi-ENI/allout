@@ -40,4 +40,13 @@ class SiteRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function findByNomContient(?string $recherche): array
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.nom LIKE :recherche')
+            ->setParameter('recherche', '%'.$recherche.'%')
+            ->orderBy('s.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
