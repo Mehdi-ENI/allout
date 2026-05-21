@@ -8,11 +8,12 @@ use App\Entity\Site;
 use App\Entity\Ville;
 use App\Enum\Etat;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use App\Entity\Sortie;
 
-class AppFixtures extends Fixture
+class AppFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -20,16 +21,16 @@ class AppFixtures extends Fixture
         $site->setNom('Test');
         $manager->persist($site);
 
-        $ville = new Ville();
-        $ville->setNom('Test');
-        $ville->setCodePostal('12345');
-        $manager->persist($ville);
-
-        $lieu = new Lieu();
-        $lieu->setNom('Test');
-        $lieu->setRue('Test');
-        $lieu->setVille($ville);
-        $manager->persist($lieu);
+//        $ville = new Ville();
+//        $ville->setNom('Test');
+//        $ville->setCodePostal('12345');
+//        $manager->persist($ville);
+//
+//        $lieu = new Lieu();
+//        $lieu->setNom('Test');
+//        $lieu->setRue('Test');
+//        $lieu->setVille($ville);
+//        $manager->persist($lieu);
 
         $organisateur1 = new Participant();
         $organisateur1->setNom('Dumitrescu')
@@ -89,7 +90,7 @@ class AppFixtures extends Fixture
         $manager->flush();
 
         $faker = Factory::create('fr_FR');
-
+        $lieu = $manager->getRepository(Lieu::class)->findAll(); // Récupère les lieux
         for ($i = 0; $i < 20; $i++) {
 
             $dateLimiteInscription = $faker->dateTimeBetween('-1 month', '+1 month');
@@ -111,12 +112,22 @@ class AppFixtures extends Fixture
                 ->setOrganisateur($organisateur)
                 ->addParticipant($faker->randomElement($autresParticipants))
                 ->setSite($site)
-                ->setLieu($lieu)
+                ->setLieu($faker->randomElement($lieu))
                 ->setActive($faker->boolean(80)) // 80% de chances d'être active
                 ->setAnnulee($faker->boolean(20)); // 20% de chances d'être annulée
 
             $manager->persist($sortie);
         }
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            // TODO SiteFixtures::class,
+            VilleFixtures::class,
+            LieuFixtures::class,
+            //TODO ParticipantFixtures::class,
+        ];
     }
 }

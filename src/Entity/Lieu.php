@@ -29,17 +29,11 @@ class Lieu
     private ?string $rue = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Range(
-        min: -90,
-        max: 90,
-        notInRangeMessage: 'La latitude doit être entre {{ min }} et {{ max }}')]
+    #[Assert\Range(notInRangeMessage: 'La latitude doit être entre {{ min }} et {{ max }}', min: -90, max: 90)]
     private ?float $latitude = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Range(
-        min: -180,
-        max: 180,
-        notInRangeMessage: 'La longitude doit être entre {{ min }} et {{ max }}')]
+    #[Assert\Range(notInRangeMessage: 'La longitude doit être entre {{ min }} et {{ max }}', min: -180, max: 180)]
     private ?float $longitude = null;
 
     /**
