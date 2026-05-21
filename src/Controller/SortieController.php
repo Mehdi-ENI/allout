@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\DTO\AnnulationDTO;
+use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Form\AnnulationDTOType;
+use App\Form\LieuType;
 use App\Form\SortieType;
 use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
@@ -24,6 +26,10 @@ final class SortieController extends AbstractController
 
         $sortie = new Sortie();
         $sortieForm = $this->createForm(SortieType::class, $sortie);
+
+        $lieu = new Lieu();
+        $lieuForm = $this->createForm(LieuType::class, $lieu);
+
         $sortieForm->handleRequest($request);
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
             // Organisateur connecté
@@ -47,6 +53,7 @@ final class SortieController extends AbstractController
 
         return $this->render('sortie/create.html.twig', [
             'sortieForm' => $sortieForm->createView(),
+            'lieuForm' => $lieuForm->createView(),
         ]);
     }
 
