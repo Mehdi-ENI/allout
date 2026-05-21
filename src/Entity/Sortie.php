@@ -23,6 +23,7 @@ class Sortie
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
+    #[Assert\NotNull(message: "La date de début est obligatoire.")]
     #[Assert\GreaterThan("today", message: "La date de début doit être dans le futur.")]
     #[ORM\Column]
     private ?\DateTime $dateHeureDebut = null;
@@ -30,8 +31,9 @@ class Sortie
     #[ORM\Column]
     private ?\DateInterval $duree = null;
 
-    #[Assert\LessThan(propertyPath: "dateHeureDebut", message: "La date limite d'inscription doit être avant la date de début !")]
-    #[ORM\Column]
+    #[Assert\NotNull(message: "La date limite d'inscription est obligatoire.")]
+    #[Assert\GreaterThan("today", message: "La date limite d'inscription doit être dans le futur.")]
+    #[Assert\LessThan(propertyPath: "dateHeureDebut", message: "La date limite d'inscription doit être avant la date de début.")]    #[ORM\Column]
     private ?\DateTime $dateLimiteInscription = null;
 
     #[ORM\Column]

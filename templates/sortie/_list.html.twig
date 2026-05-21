@@ -28,7 +28,7 @@
                     <td>
                         {% if sortie.etat.value == "creee" and sortie.organisateur == app.user %}
                             <a class="btn btn-primary" href="{{ path('sortie_detail', {id: sortie.id}) }}">Afficher</a>
-                            <a class="btn btn-warning" href="">Modifier</a>
+                            <a class="btn btn-warning" href="{{ path('sortie_update', {id: sortie.id}) }}">Modifier</a>
                             <a class="btn btn-success" href="">Publier</a>
 
                         {% elseif sortie.etat.value in ["publiee", "cloturee"] %}
