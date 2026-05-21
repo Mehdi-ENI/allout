@@ -33,7 +33,7 @@ class Sortie
 
     #[Assert\NotNull(message: "La date limite d'inscription est obligatoire.")]
     #[Assert\GreaterThan("today", message: "La date limite d'inscription doit être dans le futur.")]
-    #[Assert\LessThan(propertyPath: "dateHeureDebut", message: "La date limite d'inscription doit être avant la date de début.")]    #[ORM\Column]
+    #[Assert\LessThan(propertyPath: "dateHeureDebut", message: "La date limite d'inscription doit être avant la date de début.")]
     #[ORM\Column]
     private ?\DateTime $dateLimiteInscription = null;
 
