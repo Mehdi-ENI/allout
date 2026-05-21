@@ -34,6 +34,7 @@ class Sortie
     #[Assert\NotNull(message: "La date limite d'inscription est obligatoire.")]
     #[Assert\GreaterThan("today", message: "La date limite d'inscription doit être dans le futur.")]
     #[Assert\LessThan(propertyPath: "dateHeureDebut", message: "La date limite d'inscription doit être avant la date de début.")]    #[ORM\Column]
+    #[ORM\Column]
     private ?\DateTime $dateLimiteInscription = null;
 
     #[ORM\Column]
@@ -169,7 +170,7 @@ class Sortie
 
         if (!$this->active) {
             return Etat::Creee;
-        } elseif ($this->etat === Etat::Creee && $now < $this->dateLimiteInscription) {
+        } elseif ($now < $this->dateLimiteInscription) {
             return Etat::Publiee;
         } elseif ($now > $this->dateLimiteInscription && $now < $this->dateHeureDebut) {
             return Etat::Cloturee;
@@ -180,15 +181,8 @@ class Sortie
         } elseif ($now > $dateArchivage) {
             return Etat::Archivee;
         }
-        return $this->etat;
+        return Etat::Annulee;
     }
-
-//    public function setEtat(Etat $etat): static
-//    {
-//        $this->etat = $etat;
-//
-//        return $this;
-//    }
 
     /**
      * @return Collection<int, Participant>

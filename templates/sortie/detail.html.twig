@@ -73,6 +73,20 @@
                     {% endif %}
                 {% endif %}
 
+                {% if sortie.annulee %}
+                    <div class="alert alert-danger">
+                        <h5>Sortie annulée</h5>
+                        <p>
+                            <strong>Motif :</strong>
+                            {{ sortie.motifAnnulation }}
+                        </p>
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{{ path('sortie_delete', {id: sortie.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('suppression' ~ sortie.id) }}">
+                    <button class="btn btn-warning" type="submit">Supprimer</button>
+                </form>
                 <a href="{{ path('sortie_list') }}"
                    class="btn btn-secondary">
                     Retour
