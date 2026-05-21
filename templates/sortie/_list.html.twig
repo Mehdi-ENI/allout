@@ -31,7 +31,7 @@
                             <a class="btn btn-warning" href="">Modifier</a>
                             <a class="btn btn-success" href="">Publier</a>
 
-                        {% elseif sortie.etat.value == "publiee" %}
+                        {% elseif sortie.etat.value in ["publiee", "cloturee"] %}
                             <a class="btn btn-primary" href="{{ path('sortie_detail', {id: sortie.id}) }}">Afficher</a>
                             {% if app.user %}
                                 {% if sortie.organisateur == app.user %}
@@ -41,7 +41,7 @@
                                         <input type="hidden" name="_token" value="{{ csrf_token('desistement' ~ sortie.id) }}">
                                         <button class="btn btn-warning" type="submit">Se désister</button>
                                     </form>
-                                {% else %}
+                                {% elseif sortie.etat.value == "publiee" %}
                                     <form method="post" action="{{ path('sortie_inscription', {id: sortie.id}) }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token('inscription' ~ sortie.id) }}">
                                         <button class="btn btn-success" type="submit">S'inscrire</button>
@@ -49,7 +49,7 @@
                                 {% endif %}
                             {% endif %}
 
-                        {% elseif sortie.etat.value in ["cloturee", "en_cours", "terminee", "annulee"] %}
+                        {% elseif sortie.etat.value in ["en_cours", "terminee", "annulee"] %}
                             <a class="btn btn-primary" href="{{ path('sortie_detail', {id: sortie.id}) }}">Afficher</a>
                         {% endif %}
                     </td>
