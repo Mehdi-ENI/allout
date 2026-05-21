@@ -1,21 +1,35 @@
 {% extends 'base.html.twig' %}
-
 {% block body %}
     <h1>Update profile</h1>
-
     {{ form_errors(updateForm) }}
     {{ form_start(updateForm) }}
     {{ form_row(updateForm.prenom) }}
     {{ form_row(updateForm.nom) }}
     {{ form_row(updateForm.pseudo) }}
-    {{ form_row(updateForm.roles) }}
     {{ form_row(updateForm.telephone) }}
     {{ form_row(updateForm.email) }}
     {{ form_row(updateForm.site) }}
+
+    {% if "ROLE_ADMIN" in app.user.roles %}
+        {{ form_row(updateForm.roles) }}
+    {% else %}
+        <div style="display:none;">
+            {{ form_row(updateForm.roles) }}
+        </div>
+    {% endif %}
+
+    {% if participant.image %}
+        <div class="mt-3 mb-2 text-center">
+            <p>Current image :</p>
+            <img src="{{ asset('img/' ~ participant.image) }}"
+                 alt="Current image"
+                 style="max-width:150px; height:auto; border-radius:50%;">
+        </div>
+    {% endif %}
+
     {{ form_row(updateForm.image) }}
 
-
-    <button type="submit" class="btn btn-success ">Update</button>
+    <button type="submit" class="btn btn-success">Update</button>
     {{ form_end(updateForm) }}
 {% endblock %}
 

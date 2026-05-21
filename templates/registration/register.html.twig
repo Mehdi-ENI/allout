@@ -63,10 +63,15 @@
                                 </div>
                             {% endif %}
                         </div>
-
-                        {# On rend first et second séparément pour contrôler les classes Bootstrap.
-                           Les erreurs de correspondance remontent sur plainPassword (le parent),
-                           on les affiche sous le second champ. #}
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.site, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.site, {'attr': {'class': 'form-control' ~ (registrationForm.email.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                            {% if registrationForm.email.vars.errors|length > 0 %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in registrationForm.email.vars.errors %}{{ error.message }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
                         <div class="mb-3">
                             {{ form_label(registrationForm.plainPassword.first, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control' ~ (registrationForm.plainPassword.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}

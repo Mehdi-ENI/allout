@@ -12,16 +12,15 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/profil', name: 'profile_')]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class ProfileController extends AbstractController
 {
     #[Route('', name: 'show')]
     public function show(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): Response {
-        /** @var \App\Entity\Participant $participant */
         $participant = $this->getUser();
 
         $passwordForm = $this->createForm(PasswordChangeType::class);
@@ -44,11 +43,11 @@ final class ProfileController extends AbstractController
                 return $this->redirectToRoute('profile_show');
             }
         }
-
         return $this->render('profile/show.html.twig', [
             'participant' => $participant,
             'passwordForm' => $passwordForm,
             'formSubmitted' => $passwordForm->isSubmitted(),
         ]);
+
     }
 }

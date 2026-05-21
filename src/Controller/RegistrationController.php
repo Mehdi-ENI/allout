@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Form\RegistrationFormType;
+use App\Utils\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,13 +17,18 @@ class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
     #[IsGranted("ROLE_ADMIN")]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, FileUploader $fileUploader,EntityManagerInterface $entityManager): Response
     {
         $user = new Participant();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //réupération de l'image et traitement
+            $file = $form->get('poster')->getData();
+            $user->setImage(
+                $fileUploader->update($user->getImage(), $this->getParameter('serie_poster_dir'), $file, $user->getPseudo())
+            );
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 

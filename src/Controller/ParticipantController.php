@@ -22,22 +22,6 @@ final class ParticipantController extends AbstractController
         $participants = $participantRepository->findAll();
         return $this->render('participant/list.html.twig', ['participants' => $participants]);
     }
-
-    #[Route('/{id}', name: 'detail', requirements: ['id' => '[0-9]+'])]
-    #[IsGranted("ROLE_ADMIN")]
-    public function detail(int $id, ParticipantRepository $participantRepository): Response
-    {
-        $participant = $participantRepository->find($id);
-
-        if (!$participant) {
-            throw $this->createNotFoundException('Ooops ! Not found');
-        }
-
-        return $this->render('participant/detail.html.twig', [
-            'participant' => $participant
-        ]);
-    }
-
     #[Route('/{id}/delete', name: 'delete', requirements: ['id'=>'\d+'])]
     #[IsGranted("ROLE_ADMIN")]
     public function delete(EntityManagerInterface $entityManager, Participant $participant ): Response
@@ -68,28 +52,54 @@ final class ParticipantController extends AbstractController
     }
 
     #[Route('/{id}/update', name: 'update', methods: ["GET", "POST"])]
-    #[IsGranted("ROLE_ADMIN")]
-    public function update(int                    $id,
-                           ParticipantRepository        $participantRepository,
-                           Request                $request,
-                           EntityManagerInterface $entityManager): Response
+    #[IsGranted("IS_AUTHENTICATED_FULLY")]
+    public function update(
+        int                    $id,
+        ParticipantRepository  $participantRepository,
+        Request                $request,
+        EntityManagerInterface $entityManager
+    ): Response
     {
         $participant = $participantRepository->find($id);
-        $participantForm = $this->createForm(UpdateParticipantType::class, $participant);
 
+        if (!$participant) {
+            throw $this->createNotFoundException('Participant not found');
+        }
+
+        $participantForm = $this->createForm(UpdateParticipantType::class, $participant);
         $participantForm->handleRequest($request);
 
         if ($participantForm->isSubmitted() && $participantForm->isValid()) {
 
+            $imageFile = $participantForm->get('image')->getData();
+            $uploadDir = $this->getParameter('profile_image_dir');
+
+            if ($imageFile) {
+                if ($participant->getImage()) {
+                    $oldFile = $uploadDir . '/' . $participant->getImage();
+                    if (file_exists($oldFile)) {
+                        unlink($oldFile);
+                    }
+                }
+
+                $safeName    = preg_replace('/[^a-z0-9]+/i', '-', $participant->getPseudo() ?? $participant->getEmail());
+                $newFileName = $safeName . '-' . uniqid() . '.' . $imageFile->guessExtension();
+                $imageFile->move($uploadDir, $newFileName);
+                $participant->setImage($newFileName);
+
+                dd($participant->getImage(), $participant); // ← ajoute ça temporairement
+            }
 
             $entityManager->persist($participant);
             $entityManager->flush();
-            $this->addFlash('success', $participant->getPrenom() .' '. $participant->getnom(). ' was updated !');
-            return $this->redirectToRoute('participant_detail', ['id' => $participant->getId()]);
+
+            $this->addFlash('success', $participant->getPrenom() . ' ' . $participant->getNom() . ' was updated !');
+            return $this->redirectToRoute('profile_show', ['id' => $participant->getId()]);
         }
 
         return $this->render("participant/update.html.twig", [
-            'updateForm' => $participantForm
+            'updateForm'  => $participantForm,
+            'participant' => $participant,
         ]);
     }
 }
