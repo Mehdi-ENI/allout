@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\DTO\AnnulationDTO;
 use App\Entity\Sortie;
+use App\Form\AnnulationDTOType;
 use App\Form\SortieType;
 use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
@@ -103,6 +105,34 @@ final class SortieController extends AbstractController
         return $this->render('sortie/update.html.twig', [
             'sortieForm' => $form,
             'sortie' => $sortie,
+        ]);
+    }
+
+    #[Route('/{id}/annuler', name: 'annuler')]
+    public function annuler(Sortie $sortie, Request $request, SortieService $sortieService): Response
+    {
+        $dto = new AnnulationDTO();
+
+        $form = $this->createForm(AnnulationDTOType::class, $dto);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            try {
+                $sortieService->annulerSortie($sortie, $dto->motif);
+            } catch (\Exception $e) {
+                $this->addFlash('error', $e->getMessage());
+                return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
+            }
+
+            $this->addFlash('success', 'La sortie a été annulée.');
+
+            return $this->redirectToRoute('sortie_list');
+        }
+
+        return $this->render('sortie/annuler.html.twig', [
+            'sortie' => $sortie,
+            'form' => $form
         ]);
     }
 
