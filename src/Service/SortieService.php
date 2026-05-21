@@ -99,4 +99,21 @@ class SortieService
         $sortie->removeParticipant($participant);
         $this->entityManager->flush();
     }
+
+    public function delete(Sortie $sortie, Participant $participant): void
+    {
+        if ($sortie->getEtat() !== Etat::Creee) {
+            throw new \DomainException('Seules les sorties en état "Créée" peuvent être supprimées.');
+        }
+
+        if(
+            $sortie->getOrganisateur() !== $participant
+            && !in_array('ROLE_ADMIN', $participant->getRoles())
+        ) {
+            throw new \DomainException('Vous ne pouvez pas supprimer cette sortie.');
+        }
+
+        $this->entityManager->remove($sortie);
+        $this->entityManager->flush();
+    }
 }

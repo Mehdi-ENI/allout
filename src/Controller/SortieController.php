@@ -182,4 +182,28 @@ final class SortieController extends AbstractController
 
         return $this->redirectToRoute('sortie_list');
     }
+
+    #[Route('/{id}/delete', name: 'delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function delete(int $id, Request $request, SortieService $sortieService): Response {
+
+        if (!$this->isCsrfTokenValid('suppression' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token invalide.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
+        /** @var Participant $participant */
+        $participant = $this->getUser();
+
+        try {
+            $sortie = $sortieService->getSortieDetail($id);
+            $sortieService->delete($sortie, $participant);
+
+            $this->addFlash('success', 'Sortie supprimée.');
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('sortie_list');
+    }
 }
