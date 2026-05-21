@@ -66,6 +66,9 @@ class Sortie
     #[ORM\Column]
     private ?bool $annulee = false;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $motifAnnulation = null;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
@@ -265,6 +268,18 @@ class Sortie
     public function setAnnulee(bool $annulee): static
     {
         $this->annulee = $annulee;
+
+        return $this;
+    }
+
+    public function getMotifAnnulation(): ?string
+    {
+        return $this->motifAnnulation;
+    }
+
+    public function setMotifAnnulation(?string $motifAnnulation): static
+    {
+        $this->motifAnnulation = $motifAnnulation;
 
         return $this;
     }

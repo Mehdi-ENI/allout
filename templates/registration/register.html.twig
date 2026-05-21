@@ -1,21 +1,107 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Créer un participant{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
 
-    {{ form_errors(registrationForm) }}
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.prenom) }}
-        {{ form_row(registrationForm.nom) }}
-        {{ form_row(registrationForm.telephone) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
+                <div class="card">
+                    <div class="card-header fw-bold">Créer un participant</div>
+                    <div class="card-body">
 
+                        {{ form_errors(registrationForm) }}
+                        {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
 
-        <button type="submit" class="btn btn-success ">Register</button>
-    {{ form_end(registrationForm) }}
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.prenom, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.prenom, {'attr': {'class': 'form-control' ~ (registrationForm.prenom.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                            {% if registrationForm.prenom.vars.errors|length > 0 %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in registrationForm.prenom.vars.errors %}{{ error.message }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.nom, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.nom, {'attr': {'class': 'form-control' ~ (registrationForm.nom.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                            {% if registrationForm.nom.vars.errors|length > 0 %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in registrationForm.nom.vars.errors %}{{ error.message }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.pseudo, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.pseudo, {'attr': {'class': 'form-control' ~ (registrationForm.pseudo.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                            {% if registrationForm.pseudo.vars.errors|length > 0 %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in registrationForm.pseudo.vars.errors %}{{ error.message }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.telephone, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.telephone, {'attr': {'class': 'form-control' ~ (registrationForm.telephone.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                            {% if registrationForm.telephone.vars.errors|length > 0 %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in registrationForm.telephone.vars.errors %}{{ error.message }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.email, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control' ~ (registrationForm.email.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                            {% if registrationForm.email.vars.errors|length > 0 %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in registrationForm.email.vars.errors %}{{ error.message }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {# On rend first et second séparément pour contrôler les classes Bootstrap.
+                           Les erreurs de correspondance remontent sur plainPassword (le parent),
+                           on les affiche sous le second champ. #}
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.plainPassword.first, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control' ~ (registrationForm.plainPassword.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.plainPassword.second, 'Confirmer le mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control' ~ (registrationForm.plainPassword.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                            {% if registrationForm.plainPassword.vars.errors|length > 0 %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in registrationForm.plainPassword.vars.errors %}
+                                        {{ error.message }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(registrationForm.image, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.image, {'attr': {'class': 'form-control' ~ (registrationForm.image.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                            {% if registrationForm.image.vars.errors|length > 0 %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in registrationForm.image.vars.errors %}{{ error.message }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">Créer le participant</button>
+
+                        {{ form_end(registrationForm) }}
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 {% endblock %}

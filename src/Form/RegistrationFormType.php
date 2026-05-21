@@ -6,10 +6,12 @@ use App\Entity\Participant;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -44,6 +46,7 @@ class RegistrationFormType extends AbstractType
             ->add('prenom')
             ->add('pseudo')
             ->add('telephone')
+            ->add('image', FileType::class, ['mapped' => false,'constraints'=> [new Image(maxSize: '5M', mimeTypes: ["image/jpg", "image/png"], maxSizeMessage: "5M max !")]])
         ;
     }
 

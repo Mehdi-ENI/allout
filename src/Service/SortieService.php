@@ -10,15 +10,12 @@ use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 
 class SortieService
 {
     public function __construct(private readonly EntityManagerInterface $entityManager,
-                                private readonly SortieRepository       $sortieRepository,
-                                private readonly Security               $security,
-                                private readonly ParticipantRepository  $participantRepository)
+                                private readonly SortieRepository       $sortieRepository)
     {
     }
 
@@ -45,15 +42,37 @@ class SortieService
         return $sortie;
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function annulerSortie(Sortie $sortie, string $motif): void
+    {
+        $now = new \DateTime();
+
+        if ($sortie->getDateHeureDebut() <= $now) {
+            throw new \Exception('Impossible d’annuler une sortie déjà commencée ou terminée.');
+        }
+
+        $sortie->setAnnulee(true);
+        $sortie->setMotifAnnulation($motif);
+
+        foreach ($sortie->getParticipants() as $participant) {
+
+            // envoi mail
+
+        }
+
+        $this->entityManager->flush();
+    }
     public function inscription(int $id, Participant $participant): void
     {
+
         $sortie = $this->sortieRepository->find($id)
             ?? throw new NotFoundHttpException("Sortie introuvable.");
 
         if ($sortie->getEtat() !== Etat::Publiee) {
             throw new \DomainException("Les inscriptions ne sont pas ouvertes pour cette sortie.");
         }
-
         if ($sortie->getParticipants()->contains($participant)) {
             throw new \DomainException("Vous êtes déjà inscrit à cette sortie.");
         }
