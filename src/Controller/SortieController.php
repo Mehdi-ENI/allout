@@ -108,26 +108,22 @@ final class SortieController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/annuler', name: 'annuler')]
+    #[Route('/{id}/annuler', name: 'annuler', methods: ['GET', 'POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function annuler(Sortie $sortie, Request $request, SortieService $sortieService): Response
     {
         $dto = new AnnulationDTO();
-
         $form = $this->createForm(AnnulationDTOType::class, $dto);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             try {
                 $sortieService->annulerSortie($sortie, $dto->motif);
-            } catch (\Exception $e) {
+                $this->addFlash('success', 'La sortie a été annulée.');
+                return $this->redirectToRoute('sortie_list');
+            } catch (\DomainException $e) {
                 $this->addFlash('error', $e->getMessage());
-                return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
             }
-
-            $this->addFlash('success', 'La sortie a été annulée.');
-
-            return $this->redirectToRoute('sortie_list');
         }
 
         return $this->render('sortie/annuler.html.twig', [

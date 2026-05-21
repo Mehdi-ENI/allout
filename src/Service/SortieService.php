@@ -42,28 +42,24 @@ class SortieService
         return $sortie;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function annulerSortie(Sortie $sortie, string $motif): void
     {
-        $now = new \DateTime();
+        $etat = $sortie->getEtat();
 
-        if ($sortie->getDateHeureDebut() <= $now) {
-            throw new \Exception('Impossible d’annuler une sortie déjà commencée ou terminée.');
+        if (in_array($etat, [Etat::EnCours, Etat::Terminee, Etat::Archivee, Etat::Annulee])) {
+            throw new \DomainException('Impossible d\'annuler une sortie déjà commencée, terminée ou annulée.');
         }
 
         $sortie->setAnnulee(true);
         $sortie->setMotifAnnulation($motif);
 
         foreach ($sortie->getParticipants() as $participant) {
-
-            // envoi mail
-
+            // TODO envoi mail
         }
 
         $this->entityManager->flush();
     }
+
     public function inscription(int $id, Participant $participant): void
     {
 
