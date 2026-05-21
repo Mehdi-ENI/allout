@@ -26,12 +26,10 @@
 
     <div class="d-flex justify-content-end gap-2">
         <a href="{{ path('sortie_detail', { id: sortie.id }) }}" class="btn btn-secondary">Retour</a>
-        <button class="btn btn-danger">Annuler la sortie</button>
+        <button type="submit" class="btn btn-danger">Annuler la sortie</button>
     </div>
 
     {{ form_end(form) }}
-    {{ form_end(form) }}
-
 {% endblock %}
 
 {% block title %}

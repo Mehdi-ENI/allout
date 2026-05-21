@@ -23,6 +23,7 @@ class Sortie
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
+    #[Assert\NotNull(message: "La date de début est obligatoire.")]
     #[Assert\GreaterThan("today", message: "La date de début doit être dans le futur.")]
     #[ORM\Column]
     private ?\DateTime $dateHeureDebut = null;
@@ -30,7 +31,9 @@ class Sortie
     #[ORM\Column]
     private ?\DateInterval $duree = null;
 
-    #[Assert\LessThan(propertyPath: "dateHeureDebut", message : "La date limite d'inscription doit être avant la date de début !")]
+    #[Assert\NotNull(message: "La date limite d'inscription est obligatoire.")]
+    #[Assert\GreaterThan("today", message: "La date limite d'inscription doit être dans le futur.")]
+    #[Assert\LessThan(propertyPath: "dateHeureDebut", message: "La date limite d'inscription doit être avant la date de début.")]
     #[ORM\Column]
     private ?\DateTime $dateLimiteInscription = null;
 
@@ -162,30 +165,24 @@ class Sortie
         $dateFin = (clone $this->dateHeureDebut)
             ->add($this->duree);
 
+        $dateArchivage = (clone $dateFin)
+            ->modify('+30 days');
+
         if (!$this->active) {
             return Etat::Creee;
-        } elseif ($this->etat === Etat::Creee &&$now < $this->dateLimiteInscription) {
+        } elseif ($now < $this->dateLimiteInscription) {
             return Etat::Publiee;
         } elseif ($now > $this->dateLimiteInscription && $now < $this->dateHeureDebut) {
             return Etat::Cloturee;
         } elseif ($now >= $this->dateHeureDebut && $now <= $dateFin) {
             return Etat::EnCours;
-        } elseif ($now > $dateFin && $now <= $dateFin->modify('+30 day')) {
+        } elseif ($now > $dateFin && $now <= $dateArchivage) {
             return Etat::Terminee;
-        } elseif ($now > $dateFin->modify('+30 day')) {
+        } elseif ($now > $dateArchivage) {
             return Etat::Archivee;
         }
-
-        return $this->etat;
-
+        return Etat::Annulee;
     }
-
-//    public function setEtat(Etat $etat): static
-//    {
-//        $this->etat = $etat;
-//
-//        return $this;
-//    }
 
     /**
      * @return Collection<int, Participant>

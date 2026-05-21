@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\DTO\AnnulationDTO;
+use App\Entity\Lieu;
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\AnnulationDTOType;
+use App\Form\LieuType;
 use App\Form\SortieType;
 use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
@@ -13,7 +16,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/sortie', name: 'sortie_')]
 final class SortieController extends AbstractController
@@ -24,6 +29,10 @@ final class SortieController extends AbstractController
 
         $sortie = new Sortie();
         $sortieForm = $this->createForm(SortieType::class, $sortie);
+
+        $lieu = new Lieu();
+        $lieuForm = $this->createForm(LieuType::class, $lieu);
+
         $sortieForm->handleRequest($request);
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
             // Organisateur connecté
@@ -47,6 +56,7 @@ final class SortieController extends AbstractController
 
         return $this->render('sortie/create.html.twig', [
             'sortieForm' => $sortieForm->createView(),
+            'lieuForm' => $lieuForm->createView(),
         ]);
     }
 
@@ -105,26 +115,22 @@ final class SortieController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/annuler', name: 'annuler')]
+    #[Route('/{id}/annuler', name: 'annuler', methods: ['GET', 'POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function annuler(Sortie $sortie, Request $request, SortieService $sortieService): Response
     {
         $dto = new AnnulationDTO();
-
         $form = $this->createForm(AnnulationDTOType::class, $dto);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             try {
                 $sortieService->annulerSortie($sortie, $dto->motif);
-            } catch (\Exception $e) {
+                $this->addFlash('success', 'La sortie a été annulée.');
+                return $this->redirectToRoute('sortie_list');
+            } catch (\DomainException $e) {
                 $this->addFlash('error', $e->getMessage());
-                return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
             }
-
-            $this->addFlash('success', 'La sortie a été annulée.');
-
-            return $this->redirectToRoute('sortie_list');
         }
 
         return $this->render('sortie/annuler.html.twig', [
@@ -133,27 +139,71 @@ final class SortieController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/inscription', name: 'inscription', requirements: ['id' => '\d+'])]
+    #[Route('/{id}/inscription', name: 'inscription', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function inscription(Request $request, SortieService $sortieService, int $id): Response
     {
-        try {
-            $sortieService->inscription($id);
-            return $this->redirectToRoute('sortie_list');
-        } catch (\Exception $e) {
-            $this->addFlash('error', $e->getMessage());
+        if (!$this->isCsrfTokenValid('inscription' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token invalide.');
             return $this->redirectToRoute('sortie_list');
         }
+
+        /** @var Participant $participant */
+        $participant = $this->getUser();
+
+        try {
+            $sortieService->inscription($id, $participant);
+            $this->addFlash('success', 'Inscription confirmée.');
+        } catch (NotFoundHttpException|\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('sortie_list');
     }
 
-    #[Route('/{id}/desistement', name: 'desistement', requirements: ['id' => '\d+'])]
+    #[Route('/{id}/desistement', name: 'desistement', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function desistement(Request $request, SortieService $sortieService, int $id): Response
     {
-        try {
-            $sortieService->desistement($id);
-            return $this->redirectToRoute('sortie_list');
-        } catch (\Exception $e) {
-            $this->addFlash('error', $e->getMessage());
+        if (!$this->isCsrfTokenValid('desistement' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token invalide.');
             return $this->redirectToRoute('sortie_list');
         }
+
+        /** @var Participant $participant */
+        $participant = $this->getUser();
+
+        try {
+            $sortieService->desistement($id, $participant);
+            $this->addFlash('success', 'Désistement pris en compte.');
+        } catch (NotFoundHttpException|\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('sortie_list');
+    }
+
+    #[Route('/{id}/delete', name: 'delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function delete(int $id, Request $request, SortieService $sortieService): Response {
+
+        if (!$this->isCsrfTokenValid('suppression' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token invalide.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
+        /** @var Participant $participant */
+        $participant = $this->getUser();
+
+        try {
+            $sortie = $sortieService->getSortieDetail($id);
+            $sortieService->delete($sortie, $participant);
+
+            $this->addFlash('success', 'Sortie supprimée.');
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('sortie_list');
     }
 }
