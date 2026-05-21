@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h3>{{ sortie.nom }}</h3>
+
+    <p>
+        <strong>Date :</strong>
+        {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}
+    </p>
+
+    <p>
+        <strong>Lieu :</strong>
+        {{ sortie.lieu.nom }}<br>
+        {{ sortie.lieu.rue }}<br>
+        {{ sortie.lieu.ville.nom }}
+    </p>
+
+    <p>
+        <strong>Participants :</strong>
+        {{ sortie.participants|length }} / {{ sortie.nbInscriptionsMax }}
+    </p>
+
+    {{ form_start(form) }}
+    {{ form_row(form.motif) }}
+
+    <div class="d-flex justify-content-end gap-2">
+        <a href="{{ path('sortie_detail', { id: sortie.id }) }}" class="btn btn-secondary">Retour</a>
+        <button class="btn btn-danger">Annuler la sortie</button>
+    </div>
+
+    {{ form_end(form) }}
+    {{ form_end(form) }}
+
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+
