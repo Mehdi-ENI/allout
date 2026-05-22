@@ -9,7 +9,6 @@
     <div class="container mt-5">
 
         <div class="card shadow-sm">
-
             <div class="card-header bg-primary text-white">
                 <h2 class="mb-0">{{ sortie.nom }}</h2>
             </div>
@@ -81,10 +80,20 @@
                         <span class="text-muted">Aucun participant inscrit</span>
                     {% endif %}
                 </div>
-
             </div>
 
-            <div class="card-footer text-end"
+            <div class="mb-3">
+                <strong>Carte :</strong>
+                <div
+                    id="map"
+                    data-latitude="{{ sortie.lieu.latitude }}"
+                    data-longitude="{{ sortie.lieu.longitude }}"
+                    data-nom="{{ sortie.lieu.nom }}"
+                    style="height: 400px;"
+                ></div>
+            </div>
+
+            <div class="card-footer text-end">
                 {% if sortie.etat.value == "publiee" %}
                     {% if sortie.organisateur == app.user %}
                         <a class="btn btn-danger" href="">Annuler</a>
@@ -115,11 +124,8 @@
                    class="btn btn-secondary">
                     Retour
                 </a>
-
             </div>
-
         </div>
-
     </div>
 
 {% endblock %}

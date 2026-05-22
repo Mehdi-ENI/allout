@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const contentType = response.headers.get('content-type');
 
         // CAS ERREUR : Symfony renvoie du HTML
-        if (!contentType.includes('application/json')) {
+        if (!contentType || !contentType.includes('application/json')) {
 
             const html = await response.text();
 
