@@ -66,10 +66,14 @@ final class ParticipantController extends AbstractController
             throw $this->createNotFoundException('Participant not found');
         }
 
+        $currentUser = $this->getUser();
+        $isOwnProfile = $currentUser->getId() === $participant->getId();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
         $participantForm = $this->createForm(UpdateParticipantType::class, $participant);
         $participantForm->handleRequest($request);
 
-        if ($participantForm->isSubmitted() && $participantForm->isValid()) {
+        if (($isOwnProfile || $isAdmin) && $participantForm->isSubmitted() && $participantForm->isValid()) {
 
             $imageFile = $participantForm->get('image')->getData();
             $uploadDir = $this->getParameter('profile_image_dir');
@@ -82,12 +86,10 @@ final class ParticipantController extends AbstractController
                     }
                 }
 
-                $safeName    = preg_replace('/[^a-z0-9]+/i', '-', $participant->getPseudo() ?? $participant->getEmail());
+                $safeName = preg_replace('/[^a-z0-9]+/i', '-', $participant->getPseudo() ?? $participant->getEmail());
                 $newFileName = $safeName . '-' . uniqid() . '.' . $imageFile->guessExtension();
                 $imageFile->move($uploadDir, $newFileName);
                 $participant->setImage($newFileName);
-
-                dd($participant->getImage(), $participant); // ← ajoute ça temporairement
             }
 
             $entityManager->persist($participant);
@@ -96,7 +98,6 @@ final class ParticipantController extends AbstractController
             $this->addFlash('success', $participant->getPrenom() . ' ' . $participant->getNom() . ' was updated !');
             return $this->redirectToRoute('profile_show', ['id' => $participant->getId()]);
         }
-
         return $this->render("participant/update.html.twig", [
             'updateForm'  => $participantForm,
             'participant' => $participant,
