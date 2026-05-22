@@ -11,6 +11,7 @@ use App\Form\LieuType;
 use App\Form\SortieType;
 use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
+use App\Service\MailService;
 use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -117,7 +118,7 @@ final class SortieController extends AbstractController
 
     #[Route('/{id}/annuler', name: 'annuler', methods: ['GET', 'POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function annuler(Sortie $sortie, Request $request, SortieService $sortieService): Response
+    public function annuler(Sortie $sortie, Request $request, SortieService $sortieService, MailService $mailService): Response
     {
         $dto = new AnnulationDTO();
         $form = $this->createForm(AnnulationDTOType::class, $dto);
@@ -183,6 +184,14 @@ final class SortieController extends AbstractController
         return $this->redirectToRoute('sortie_list');
     }
 
+    /**
+     * Cette focntions sefsefsef
+     *
+     * @param Request $request
+     * @param SortieService $sortieService
+     * @param int $id
+     * @return Response
+     */
     #[Route('/{id}/publication', name: 'publication', requirements: ['id' => '\d+'], methods: ['POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function publication(Request $request, SortieService $sortieService, int $id): Response
@@ -220,7 +229,6 @@ final class SortieController extends AbstractController
         try {
             $sortie = $sortieService->getSortieDetail($id);
             $sortieService->delete($sortie, $participant);
-
             $this->addFlash('success', 'Sortie supprimée.');
         } catch (\Exception $e) {
             $this->addFlash('error', $e->getMessage());

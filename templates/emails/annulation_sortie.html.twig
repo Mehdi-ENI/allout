@@ -1,0 +1,5 @@
+<p>Bonjour {{ participant.pseudo ?? participant.prenom }},</p>
+<p>La sortie <strong>{{ sortie.nom }}</strong> prévue le {{ sortie.dateHeureDebut|date('d/m/Y à H:i') }} a été annulée.</p>
+{% if sortie.motifAnnulation %}
+    <p>Motif : {{ sortie.motifAnnulation }}</p>
+{% endif %}

@@ -17,8 +17,27 @@
     </p>
 
     <p>
-        <strong>Participants :</strong>
-        {{ sortie.participants|length }} / {{ sortie.nbInscriptionsMax }}
+    <strong>Participants :</strong>
+    {{ sortie.participants|length }} / {{ sortie.nbInscriptionsMax }}<br>
+    {% if sortie.participants|length > 0 %}
+        <ul class="list-unstyled mb-0">
+            {% for participant in sortie.participants %}
+                <li>
+                    <a href="{{ path('profile_show', {id: participant.id}) }}">
+                        {% if participant.pseudo %}
+                            {{ participant.pseudo }}
+                        {% else %}
+                            {{ participant.nom }} {{ participant.prenom }}
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <span class="text-muted">Aucun participant inscrit</span>
+    {% endif %}
+
+
     </p>
 
     {{ form_start(form) }}
