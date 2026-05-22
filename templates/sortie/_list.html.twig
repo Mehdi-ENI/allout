@@ -24,7 +24,7 @@
                     <td>{{ sortie.participants | length }}/{{ sortie.nbInscriptionsMax }}</td>
                     <td>{{ sortie.etat.value }}</td>
                     <td>{{ sortie.participants.contains(app.user) ? 'X' : '' }}</td>
-                    <td>{{ sortie.organisateur.nom | capitalize }} {{ sortie.organisateur.prenom | slice(0, 1) }}.</td>
+                    <td><a href="{{ path('profile_show', { id: sortie.organisateur.id }) }}">{{ sortie.organisateur.nom | capitalize }} {{ sortie.organisateur.prenom | slice(0, 1) }}.</a></td>
                     <td>
                         {% if sortie.etat.value == "creee" and sortie.organisateur == app.user %}
                             <a class="btn btn-primary" href="{{ path('sortie_detail', {id: sortie.id}) }}">Afficher</a>

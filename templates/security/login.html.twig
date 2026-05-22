@@ -1,37 +1,80 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Connexion{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
+                <div class="card mt-5 shadow-lg">
+                    <div class="card-body">
+
+                <form method="post">
+
+                    {# Блок ошибки авторизации #}
+                    {% if error %}
+                        <div class="alert alert-danger">
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        </div>
+                    {% endif %}
+
+                    {# Блок "вы уже вошли" #}
+                    {% if app.user %}
+                        <div class="mb-3">
+                            Vous êtes connecté en tant que {{ app.user.userIdentifier }},
+                            <a href="{{ logout_path() }}">Se déconnecter</a>
+                        </div>
+                    {% endif %}
+
+                    {# Заголовок формы #}
+                    <h1 class="h3 mb-3 font-weight-normal">Connexion</h1>
+
+                    {# Поле Email #}
+                    <div class="mb-3">
+                        <label for="inputEmail">Email</label>
+                        <input type="email"
+                               value="{{ last_username }}"
+                               name="email"
+                               id="inputEmail"
+                               class="form-control"
+                               autocomplete="email"
+                               required
+                               autofocus>
+                    </div>
+
+                    {# Поле Password + скрытый CSRF #}
+                    <div class="mb-3">
+                        <label for="inputPassword">Mot de passe</label>
+                        <input type="password"
+                               name="password"
+                               id="inputPassword"
+                               class="form-control"
+                               autocomplete="current-password"
+                               required>
+                        <input type="hidden"
+                               name="_csrf_token"
+                               data-controller="csrf-protection"
+                               value="{{ csrf_token('authenticate') }}">
+                    </div>
+
+                    {# Чекбокс "Remember me" #}
+                    <div class="d-flex justify-content-end align-items-center mb-3">
+                        <input type="checkbox" class="form-check-input me-2" name="_remember_me" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">Se souvenir de moi</label>
+                    </div>
+
+                    {# Кнопка отправки #}
+                    <button class="btn btn-lg btn-primary w-100" type="submit">
+                        Se connecter
+                    </button>
+
+                </form>
+
+               </div>
+             </div>
+
+            </div>
         </div>
-    {% endif %}
-
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <div class="form-group">
-         <label for="inputEmail">Email</label>
-        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
     </div>
-    <div class="form-group">
-        <label for="inputPassword">Password</label>
-        <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
-    </div>
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" name="_remember_me"> Remember me
-        </label>
-    </div>
-
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
 {% endblock %}

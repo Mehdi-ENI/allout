@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon profil{% endblock %}
+{% block title %}Profil{% endblock %}
 
 {% block body %}
     <div class="container py-4">
@@ -14,7 +14,7 @@
             {% endfor %}
         {% endfor %}
 
-        <h1 class="mb-4">Mon profil</h1>
+        <h1 class="mb-4">Profil de {{ participant.prenom }} {{ participant.nom }}</h1>
 
         <div class="row g-4">
 
