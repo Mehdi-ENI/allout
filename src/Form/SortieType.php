@@ -62,6 +62,12 @@ class SortieType extends AbstractType
             ->add('lieu', EntityType::class, [
                 'class' => Lieu::class,
                 'choice_label' => 'nom',
+                'choice_attr' => function (Lieu $lieu) {
+                    return [
+                        'data-lat' => $lieu->getLatitude(),
+                        'data-lng' => $lieu->getLongitude(),
+                    ];
+                },
                 'placeholder' => 'Choisir un lieu',
                 'label' => 'Lieu',
             ])
