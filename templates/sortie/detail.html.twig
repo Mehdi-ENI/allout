@@ -84,42 +84,43 @@
 
             </div>
 
-            <div class="card-footer text-end"
-                {% if sortie.etat.value == "publiee" %}
-                    {% if sortie.organisateur == app.user %}
-                        <a class="btn btn-danger" href="">Annuler</a>
-                    {% else %}
-                        {% if sortie.participants.contains(app.user) %}
-                            <a class="btn btn-warning" href="{{ path('sortie_desistement', {id: sortie.id}) }}">Se désister</a>
-                        {% else %}
-                            <a class="btn btn-primary" href="{{ path('sortie_inscription', {id: sortie.id}) }}">S'inscrire</a>
+            {% if sortie.annulee %}
+                <div class="alert alert-danger">
+                    <h5>Sortie annulée</h5>
+                    <p>
+                        <strong>Motif :</strong>
+                        {{ sortie.motifAnnulation }}
+                    </p>
+                </div>
+            {% endif %}
+
+            <div class="card-footer text-end">
+                {% if sortie.etat.value == "creee" and sortie.organisateur == app.user %}
+                    <a class="btn btn-warning" href="{{ path('sortie_update', {id: sortie.id}) }}">Modifier</a>
+                    <a class="btn btn-success" href="">Publier</a>
+
+                {% elseif sortie.etat.value in ["publiee", "cloturee"] %}
+                    {% if app.user %}
+                        {% if sortie.organisateur == app.user %}
+                            <a class="btn btn-danger" href="{{ path('sortie_annuler', {id: sortie.id}) }}">Annuler</a>
+                        {% elseif sortie.participants.contains(app.user) %}
+                            <form method="post" action="{{ path('sortie_desistement', {id: sortie.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('desistement' ~ sortie.id) }}">
+                                <button class="btn btn-warning" type="submit">Se désister</button>
+                            </form>
+                        {% elseif sortie.etat.value == "publiee" %}
+                            <form method="post" action="{{ path('sortie_inscription', {id: sortie.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('inscription' ~ sortie.id) }}">
+                                <button class="btn btn-success" type="submit">S'inscrire</button>
+                            </form>
                         {% endif %}
                     {% endif %}
                 {% endif %}
-
-                {% if sortie.annulee %}
-                    <div class="alert alert-danger">
-                        <h5>Sortie annulée</h5>
-                        <p>
-                            <strong>Motif :</strong>
-                            {{ sortie.motifAnnulation }}
-                        </p>
-                    </div>
-                {% endif %}
-
-                <form method="post" action="{{ path('sortie_delete', {id: sortie.id}) }}">
-                    <input type="hidden" name="_token" value="{{ csrf_token('suppression' ~ sortie.id) }}">
-                    <button class="btn btn-warning" type="submit">Supprimer</button>
-                </form>
                 <a href="{{ path('sortie_list') }}"
                    class="btn btn-secondary">
                     Retour
                 </a>
-
             </div>
-
         </div>
-
     </div>
-
 {% endblock %}
