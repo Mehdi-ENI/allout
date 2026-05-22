@@ -2,16 +2,12 @@
 
 namespace App\Form;
 
+use App\Validator\PasswordConstraints;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
-use Symfony\Component\Validator\Constraints\PasswordStrength;
-
 class ChangePasswordFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -25,19 +21,7 @@ class ChangePasswordFormType extends AbstractType
                     ],
                 ],
                 'first_options' => [
-                    'constraints' => [
-                        new NotBlank(
-                            message: 'Please enter a password',
-                        ),
-                        new Length(
-                            min: 12,
-                            minMessage: 'Your password should be at least {{ limit }} characters',
-                            // max length allowed by Symfony for security reasons
-                            max: 4096,
-                        ),
-                        new PasswordStrength(),
-                        new NotCompromisedPassword(),
-                    ],
+                    'constraints' => PasswordConstraints::get(),
                     'label' => 'New password',
                 ],
                 'second_options' => [
