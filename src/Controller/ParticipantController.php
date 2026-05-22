@@ -90,8 +90,6 @@ final class ParticipantController extends AbstractController
                 $newFileName = $safeName . '-' . uniqid() . '.' . $imageFile->guessExtension();
                 $imageFile->move($uploadDir, $newFileName);
                 $participant->setImage($newFileName);
-
-                dd($participant->getImage(), $participant); // ← ajoute ça temporairement
             }
 
             $entityManager->persist($participant);
