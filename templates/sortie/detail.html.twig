@@ -47,7 +47,6 @@
 
                 <div class="mb-3">
                     <strong>Informations :</strong><br>
-
                     {% if sortie.infosSortie %}
                         {{ sortie.infosSortie }}
                     {% else %}
@@ -56,11 +55,36 @@
                     </span>
                     {% endif %}
                 </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Organisateur :</strong><br>
+                    <a href="{{ path('profile_show', {id: sortie.organisateur.id}) }}">
+                        {{ sortie.organisateur.nom }} {{ sortie.organisateur.prenom }}
+                    </a>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Participants ({{ sortie.participants|length }}) :</strong><br>
+                    {% if sortie.participants|length > 0 %}
+                        <ul class="list-unstyled mb-0">
+                            {% for participant in sortie.participants %}
+                                <li>
+                                    <a href="{{ path('profile_show', {id: participant.id}) }}">
+                                        {{ participant.nom }} {{ participant.prenom }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="text-muted">Aucun participant inscrit</span>
+                    {% endif %}
+                </div>
 
             </div>
 
-            <div class="card-footer text-end">
-
+            <div class="card-footer text-end"
                 {% if sortie.etat.value == "publiee" %}
                     {% if sortie.organisateur == app.user %}
                         <a class="btn btn-danger" href="">Annuler</a>
