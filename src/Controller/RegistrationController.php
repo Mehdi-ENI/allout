@@ -25,7 +25,7 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             //réupération de l'image et traitement
-            $file = $form->get('poster')->getData();
+            $file = $form->get('image')->getData();
             $user->setImage(
                 $fileUploader->update($user->getImage(), $this->getParameter('serie_poster_dir'), $file, $user->getPseudo())
             );

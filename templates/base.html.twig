@@ -16,6 +16,70 @@
 
 </head>
 <body>
+<nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+    <div class="container-fluid">
+        {# Marque : nom du projet (toujours visible) #}
+        <a class="navbar-brand" href="{{ app.user ? path('sortie_list') : path('app_login') }}">
+            <img src="{{ asset('images/logo.svg') }}"
+                 alt="Sortir.com"
+                 height="50">
+        </a>
+
+        {# Bouton hamburger pour mobile #}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+
+            {# Liens principaux : visibles uniquement pour les utilisateurs connectés #}
+            {% if app.user %}
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('sortie_list') }}">Sorties</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('sortie_create') }}">Créer une sortie</a>
+                    </li>
+
+                    {# Menu Administration : visible uniquement pour les administrateurs #}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Administration
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ path('app_ville_index') }}">Villes</a></li>
+                                <li><a class="dropdown-item" href="{{ path('app_lieu_index') }}">Lieux</a></li>
+                                <li><a class="dropdown-item" href="{{ path('app_site_index') }}">Sites</a></li>
+                                <li><a class="dropdown-item" href="{{ path('participant_list') }}">Participants</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                </ul>
+            {% endif %}
+
+            {# Partie droite : Connexion (invité) ou Nom + Déconnexion (connecté) #}
+            <ul class="navbar-nav ms-auto">
+                {% if app.user %}
+                    <li class="nav-item">
+                        <span class="navbar-text me-3">
+                            {{ app.user.pseudo ?? app.user.email }}
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_logout') }}">Se déconnecter</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_login') }}">Connexion</a>
+                    </li>
+                {% endif %}
+            </ul>
+
+        </div>
+    </div>
+</nav>
 {% for label, messages in app.flashes %}
     {% for message in messages %}
         <div class="flash flash-{{ label }}">

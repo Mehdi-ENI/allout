@@ -2,12 +2,12 @@
 
 namespace App\Form;
 
+use App\Validator\PasswordConstraints;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class PasswordChangeType extends AbstractType
@@ -39,14 +39,7 @@ class PasswordChangeType extends AbstractType
                     'attr' => ['autocomplete' => 'new-password'],
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
-                'constraints' => [
-                    new NotBlank(message: 'Veuillez saisir un nouveau mot de passe'),
-                    new Length(
-                        min: 6,
-                        max: 4096,
-                        minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères',
-                    ),
-                ],
+                'constraints' => PasswordConstraints::get(),
             ]);
     }
 
