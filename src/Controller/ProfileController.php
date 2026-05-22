@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Repository\ParticipantRepository;
 
 #[Route('/profil', name: 'profile_')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -20,14 +21,26 @@ final class ProfileController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager,
+        ParticipantRepository $participantRepository,
     ): Response {
-        $participant = $this->getUser();
+        $id = $request->query->get('id');
+        $participant = $id
+            ? $participantRepository->find($id)
+            : $this->getUser();
+
+        if (!$participant) {
+            throw $this->createNotFoundException('Participant non trouvé');
+        }
+
+        // Le formulaire de mot de passe ne concerne que le profil connecté
+        $currentUser = $this->getUser();
+        $isOwnProfile = $currentUser->getId() === $participant->getId();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
 
         $passwordForm = $this->createForm(PasswordChangeType::class);
         $passwordForm->handleRequest($request);
 
-        if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
-
+        if (($isOwnProfile || $isAdmin) && $passwordForm->isSubmitted() && $passwordForm->isValid()) {
             $currentPassword = $passwordForm->get('currentPassword')->getData();
             $newPassword = $passwordForm->get('newPassword')->getData();
 
@@ -40,14 +53,14 @@ final class ProfileController extends AbstractController
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Mot de passe modifié avec succès.');
-                return $this->redirectToRoute('profile_show');
+                return $this->redirectToRoute('profile_show', ['id' => $participant->getId()]);
             }
         }
+
         return $this->render('profile/show.html.twig', [
             'participant' => $participant,
             'passwordForm' => $passwordForm,
             'formSubmitted' => $passwordForm->isSubmitted(),
         ]);
-
     }
 }
