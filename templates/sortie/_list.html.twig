@@ -1,18 +1,18 @@
 <turbo-frame id="liste-sorties">
-    <table class="table">
+    <table class="table table-hover">
         <thead>
-        <tr>
-            <th>Nom de la sortie</th>
-            <th>Date de la sortie</th>
-            <th>Clotûre</th>
-            <th>Inscrits/places</th>
-            <th>État</th>
-            <th>Inscrit</th>
-            <th>Organisateur</th>
-            <th>Actions</th>
+        <tr class="table-secondary">
+            <th scope="col">Nom de la sortie</th>
+            <th scope="col">Date de la sortie</th>
+            <th scope="col">Clotûre</th>
+            <th scope="col">Inscrits/places</th>
+            <th scope="col">État</th>
+            <th scope="col">Inscrit</th>
+            <th scope="col">Organisateur</th>
+            <th scope="col">Actions</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody class="table-group-divider">
         {% for sortie in sorties %}
             {% if sortie.etat.value != "archivee"
                 and (sortie.etat.value != "creee" or sortie.organisateur == app.user)
@@ -74,5 +74,17 @@
             </tr>
         {% endfor %}
         </tbody>
+        <tfoot class="table-group-divider">
+        <tr class="table-secondary">
+            <th scope="col">Nom de la sortie</th>
+            <th scope="col">Date de la sortie</th>
+            <th scope="col">Clotûre</th>
+            <th scope="col">Inscrits/places</th>
+            <th scope="col">État</th>
+            <th scope="col">Inscrit</th>
+            <th scope="col">Organisateur</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </tfoot>
     </table>
 </turbo-frame>
