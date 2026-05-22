@@ -27,7 +27,7 @@
                     <td>Désactivé</td>
                 {% endif %}
                                 <td>
-                                   <a class="btn btn-danger" href="{{ path('participant_delete', {'id': participant.id}) }}">Delete</a>
+                                   <a class="btn btn-danger" href="{{ path('participant_delete', {'id': participant.id}) }}" onclick="return confirm('Are you sure you want to delete {{ participant.prenom }} {{ participant.nom}} ?')">Delete</a>
                                    <a class="btn btn-primary" href="{{ path('profile_show', {'id': participant.id}) }}">View</a>
                                     {% if participant.actif == true %}
                                         <a class="btn btn-warning" href="{{ path('participant_desactivate', {'id': participant.id}) }}">Desactivate</a>
