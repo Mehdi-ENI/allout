@@ -8,6 +8,9 @@
     {% else %}
         Non connecté
     {% endif %}
+
+    <a class="btn btn-primary" href="{{ path('sortie_create') }}">Créer une nouvelle sortie</a>
+
     <div>Filtrer les sorties</div>
 
     <form action="{{ path('sortie_list') }}" method="get">
@@ -66,6 +69,6 @@
         {% include 'sortie/_list.html.twig' %}
     </turbo-frame>
 
-    <a href="{{ path('sortie_create') }}">Create new</a>
+
 {% endblock %}
 

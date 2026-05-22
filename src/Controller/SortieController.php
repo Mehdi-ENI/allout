@@ -183,6 +183,28 @@ final class SortieController extends AbstractController
         return $this->redirectToRoute('sortie_list');
     }
 
+    #[Route('/{id}/publication', name: 'publication', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function publication(Request $request, SortieService $sortieService, int $id): Response
+    {
+        if (!$this->isCsrfTokenValid('publication' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token invalide.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
+        /** @var Participant $participant */
+        $participant = $this->getUser();
+
+        try {
+            $sortieService->publication($id, $participant);
+            $this->addFlash('success', 'Publication pris en compte.');
+        } catch (NotFoundHttpException|\DomainException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('sortie_list');
+    }
+
     #[Route('/{id}/delete', name: 'delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function delete(int $id, Request $request, SortieService $sortieService): Response {
