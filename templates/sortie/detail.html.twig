@@ -9,7 +9,6 @@
     <div class="container mt-5">
 
         <div class="card shadow-sm">
-
             <div class="card-header bg-primary text-white">
                 <h2 class="mb-0">{{ sortie.nom }}</h2>
             </div>
@@ -81,18 +80,27 @@
                         <span class="text-muted">Aucun participant inscrit</span>
                     {% endif %}
                 </div>
-
             </div>
 
-            {% if sortie.annulee %}
-                <div class="alert alert-danger">
-                    <h5>Sortie annulée</h5>
-                    <p>
-                        <strong>Motif :</strong>
-                        {{ sortie.motifAnnulation }}
-                    </p>
-                </div>
-            {% endif %}
+            <div class="mb-3">
+                <strong>Carte :</strong>
+                <div
+                    id="map"
+                    data-latitude="{{ sortie.lieu.latitude }}"
+                    data-longitude="{{ sortie.lieu.longitude }}"
+                    data-nom="{{ sortie.lieu.nom }}"
+                    style="height: 400px;"
+                ></div>
+            </div>
+                {% if sortie.annulee %}
+                    <div class="alert alert-danger">
+                        <h5>Sortie annulée</h5>
+                        <p>
+                            <strong>Motif :</strong>
+                            {{ sortie.motifAnnulation }}
+                        </p>
+                    </div>
+                {% endif %}
 
             <div class="card-footer text-end">
                 {% if sortie.etat.value == "creee" and sortie.organisateur == app.user %}
