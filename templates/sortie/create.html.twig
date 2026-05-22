@@ -65,16 +65,31 @@
                                     })
                                     }}
 
-                                    <div class="modal-body">{{ form_widget(lieuForm) }}</div>
+                                    <div class="modal-body">
+                                        {{ form_widget(lieuForm) }}
+
+                                        <div class="mt-3">
+                                            <label class="form-label">Choisir sur la carte</label>
+                                            <div id="map-create-lieu" style="height: 300px; border-radius: 10px;"></div>
+                                        </div>
+                                    </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                                         <button type="submit" class="btn btn-primary">Enregistrer</button>
                                     </div>
 
                                     {{ form_end(lieuForm) }}
-
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Localisation :</strong>
+
+                            <div
+                                id="map-sortie"
+                                style="height: 400px; border-radius: 10px;"
+                            ></div>
                         </div>
                     </div>
                 </div>

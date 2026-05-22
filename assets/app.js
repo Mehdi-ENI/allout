@@ -8,5 +8,7 @@ window.bootstrap = bootstrap;
 
 import './js/lieu-modal.js';
 import './js/map.js';
+import './js/lieu-map.js';
+import './js/lieu-map-create.js';
 
 console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
