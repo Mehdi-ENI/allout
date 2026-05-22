@@ -100,6 +100,23 @@ class SortieService
         $this->entityManager->flush();
     }
 
+    public function publication(int $id, Participant $participant): void
+    {
+        $sortie = $this->sortieRepository->find($id)
+            ?? throw new NotFoundHttpException("Sortie introuvable.");
+
+        if ($sortie->getOrganisateur()->getId() != $participant->getId()) {
+            throw new \DomainException("Vous n'êtes pas l'organisateur de la sortie");
+        }
+
+        if ($sortie->getEtat() !== Etat::Creee) {
+            throw new \DomainException("La sortie ne peut pas être publiée dans son état actuel.");
+        }
+
+        $sortie->setActive(true);
+        $this->entityManager->flush();
+    }
+
     public function delete(Sortie $sortie, Participant $participant): void
     {
         if ($sortie->getEtat() !== Etat::Creee) {

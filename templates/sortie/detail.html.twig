@@ -106,7 +106,14 @@
             <div class="card-footer text-end">
                 {% if sortie.etat.value == "creee" and sortie.organisateur == app.user %}
                     <a class="btn btn-warning" href="{{ path('sortie_update', {id: sortie.id}) }}">Modifier</a>
-                    <a class="btn btn-success" href="">Publier</a>
+                    <form method="post" action="{{ path('sortie_publication', {id: sortie.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('publication' ~ sortie.id) }}">
+                        <button class="btn btn-success" type="submit">Publier</button>
+                    </form>
+                    <form method="post" action="{{ path('sortie_delete', {id: sortie.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('suppression' ~ sortie.id) }}">
+                        <button class="btn btn-danger" type="submit">Supprimer</button>
+                    </form>
 
                 {% elseif sortie.etat.value in ["publiee", "cloturee"] %}
                     {% if app.user %}

@@ -19,17 +19,22 @@
                 and (sortie.etat.value != "annulee" or sortie.organisateur == app.user or sortie.participants.contains(app.user)) %}
                 <tr>
                     <td>{{ sortie.nom }}</td>
-                    <td>{{ sortie.dateHeureDebut|date('Y-m-d H:i') }}</td>
-                    <td>{{ sortie.dateLimiteInscription|date('Y-m-d') }}</td>
+                    <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
+                    <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
                     <td>{{ sortie.participants | length }}/{{ sortie.nbInscriptionsMax }}</td>
                     <td>{{ sortie.etat.value }}</td>
                     <td>{{ sortie.participants.contains(app.user) ? 'X' : '' }}</td>
-                    <td><a href="{{ path('profile_show', { id: sortie.organisateur.id }) }}">{{ sortie.organisateur.nom | capitalize }} {{ sortie.organisateur.prenom | slice(0, 1) }}.</a></td>
+                    <td>
+                        <a href="{{ path('profile_show', { id: sortie.organisateur.id }) }}">{{ sortie.organisateur.nom | capitalize }} {{ sortie.organisateur.prenom | slice(0, 1) }}
+                            .</a></td>
                     <td>
                         {% if sortie.etat.value == "creee" and sortie.organisateur == app.user %}
                             <a class="btn btn-primary" href="{{ path('sortie_detail', {id: sortie.id}) }}">Afficher</a>
                             <a class="btn btn-warning" href="{{ path('sortie_update', {id: sortie.id}) }}">Modifier</a>
-                            <a class="btn btn-success" href="">Publier</a>
+                            <form method="post" action="{{ path('sortie_publication', {id: sortie.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('publication' ~ sortie.id) }}">
+                                <button class="btn btn-success" type="submit">Publier</button>
+                            </form>
 
                         {% elseif sortie.etat.value in ["publiee", "cloturee"] %}
                             <a class="btn btn-primary" href="{{ path('sortie_detail', {id: sortie.id}) }}">Afficher</a>
@@ -38,12 +43,14 @@
                                     <a class="btn btn-danger" href="{{ path('sortie_annuler', {id: sortie.id}) }}">Annuler</a>
                                 {% elseif sortie.participants.contains(app.user) %}
                                     <form method="post" action="{{ path('sortie_desistement', {id: sortie.id}) }}">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('desistement' ~ sortie.id) }}">
+                                        <input type="hidden" name="_token"
+                                               value="{{ csrf_token('desistement' ~ sortie.id) }}">
                                         <button class="btn btn-warning" type="submit">Se désister</button>
                                     </form>
                                 {% elseif sortie.etat.value == "publiee" %}
                                     <form method="post" action="{{ path('sortie_inscription', {id: sortie.id}) }}">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('inscription' ~ sortie.id) }}">
+                                        <input type="hidden" name="_token"
+                                               value="{{ csrf_token('inscription' ~ sortie.id) }}">
                                         <button class="btn btn-success" type="submit">S'inscrire</button>
                                     </form>
                                 {% endif %}
