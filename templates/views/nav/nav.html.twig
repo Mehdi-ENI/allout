@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-lg bg-dark sticky-top" data-bs-theme="dark">
+    <div class="container-fluid">
+        {# Logo : toujours visible, cliquable vers l'accueil (ou login si invité) #}
+        <a class="navbar-brand" href="{{ app.user ? path('sortie_list') : path('app_login') }}">
+            <img src="{{ asset('images/logo.svg') }}"
+                 alt="Sortir.com"
+                 height="50">
+        </a>
+
+        {# Bouton hamburger pour mobile #}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+
+            {# Liens à droite — visibles uniquement pour les utilisateurs connectés #}
+            <ul class="navbar-nav ms-auto align-items-center">
+                {% if app.user %}
+
+                    {# Liens admin (Villes + Sites) — uniquement pour ROLE_ADMIN #}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_ville_index') }}">Villes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_site_index') }}">Sites</a>
+                        </li>
+                    {% endif %}
+
+                    {# Liens communs à tous les utilisateurs connectés #}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('sortie_list') }}">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('profile_show') }}">Mon profil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_logout') }}">Se déconnecter</a>
+                    </li>
+
+                {% endif %}
+            </ul>
+
+        </div>
+    </div>
+</nav>

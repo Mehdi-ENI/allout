@@ -12,14 +12,14 @@
 
                 <form method="post">
 
-                    {# Блок ошибки авторизации #}
+                    {# Bloc d'erreur d'authentification #}
                     {% if error %}
                         <div class="alert alert-danger">
                             {{ error.messageKey|trans(error.messageData, 'security') }}
                         </div>
                     {% endif %}
 
-                    {# Блок "вы уже вошли" #}
+                    {# Bloc "déjà connecté" #}
                     {% if app.user %}
                         <div class="mb-3">
                             Vous êtes connecté en tant que {{ app.user.userIdentifier }},
@@ -27,10 +27,10 @@
                         </div>
                     {% endif %}
 
-                    {# Заголовок формы #}
+                    {# Titre du formulaire #}
                     <h1 class="h3 mb-3 font-weight-normal">Connexion</h1>
 
-                    {# Поле Email #}
+                    {# Champ Email #}
                     <div class="mb-3">
                         <label for="inputEmail">Email</label>
                         <input type="email"
@@ -43,7 +43,7 @@
                                autofocus>
                     </div>
 
-                    {# Поле Password + скрытый CSRF #}
+                    {# Champ Mot de passe + token CSRF caché #}
                     <div class="mb-3">
                         <label for="inputPassword">Mot de passe</label>
                         <input type="password"
@@ -58,13 +58,13 @@
                                value="{{ csrf_token('authenticate') }}">
                     </div>
 
-                    {# Чекбокс "Remember me" #}
+                    {# Case à cocher "Se souvenir de moi #}
                     <div class="d-flex justify-content-end align-items-center mb-3">
                         <input type="checkbox" class="form-check-input me-2" name="_remember_me" id="rememberMe">
                         <label class="form-check-label" for="rememberMe">Se souvenir de moi</label>
                     </div>
 
-                    {# Кнопка отправки #}
+                    {# Bouton de soumission #}
                     <button class="btn btn-lg btn-primary w-100" type="submit">
                         Se connecter
                     </button>
