@@ -1,11 +1,10 @@
 /* global L */
+import { createMap, createMarker } from './map-utils.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 
     const mapElement = document.getElementById('map');
-
-    if (!mapElement) {
-        return;
-    }
+    if (!mapElement) {return;}
 
     const latitude = parseFloat(mapElement.dataset.latitude);
     const longitude = parseFloat(mapElement.dataset.longitude);
@@ -16,16 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const map = L.map('map').setView([latitude, longitude], 13);
-
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
-
-    L.marker([latitude, longitude])
-        .addTo(map)
-        .bindPopup(lieuNom)
-        .openPopup();
+    const map = createMap('map', latitude, longitude);
+    const marker = createMarker(map, latitude, longitude, lieuNom);
+    marker.openPopup();
 
 });
