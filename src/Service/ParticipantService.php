@@ -6,13 +6,14 @@ use App\Entity\Participant;
 use App\Repository\ParticipantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ParticipantService
+readonly class ParticipantService
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly ParticipantRepository  $participantRepository,
-        private readonly string                 $uploadDir
+        private EntityManagerInterface $entityManager,
+        private ParticipantRepository  $participantRepository,
+        private string                 $uploadDir
     ) {}
 
     public function getParticipant(int $id): Participant
@@ -44,5 +45,27 @@ class ParticipantService
         $newFileName = $safeName . '-' . uniqid() . '.' . $imageFile->guessExtension();
         $imageFile->move($this->uploadDir, $newFileName);
         $participant->setImage($newFileName);
+    }
+
+    public function getParticipantOrCurrent(mixed $id, Participant $currentUser): Participant
+    {
+        if ($id) {
+            return $this->participantRepository->find($id)
+                ?? throw new NotFoundHttpException('Participant non trouvé');
+        }
+        return $currentUser;
+    }
+
+    public function changePassword(Participant $participant, string $currentPassword, string $newPassword, UserPasswordHasherInterface $passwordHasher): void
+    {
+        if (!$passwordHasher->isPasswordValid($participant, $currentPassword)) {
+            throw new \DomainException('Le mot de passe actuel est incorrect.');
+        }
+
+        $participant->setPassword(
+            $passwordHasher->hashPassword($participant, $newPassword)
+        );
+
+        $this->entityManager->flush();
     }
 }
