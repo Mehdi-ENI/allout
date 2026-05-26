@@ -52,6 +52,13 @@ final class LieuController extends AbstractController
             return $this->redirectToRoute('app_lieu_index', [], Response::HTTP_SEE_OTHER);
 
         }
+        if ($request->isXmlHttpRequest()) {
+
+            return new JsonResponse([
+                'errors' => (string) $form->getErrors(true, false),
+            ], 422);
+        }
+
         return $this->render('lieu/new.html.twig', [
             'lieu' => $lieu,
             'form' => $form,
