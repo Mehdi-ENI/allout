@@ -5,12 +5,13 @@
             <tr class="table" style="--bs-table-bg: transparent;">
                 <th scope="col">Nom de la sortie</th>
                 <th scope="col">Date de la sortie</th>
-                <th scope="col">Clotûre</th>
-                <th scope="col">Inscrits/places</th>
-                <th scope="col">État</th>
-                <th scope="col">Inscrit</th>
-                <th scope="col">Organisateur</th>
-                <th scope="col">Actions</th>
+                <th scope="col" class="d-none d-sm-table-cell">Clotûre</th>
+                <th scope="col" class="d-none d-sm-table-cell">Inscrits/places</th>
+                <th scope="col" class="d-none d-sm-table-cell">État</th>
+                <th scope="col" class="d-none d-sm-table-cell">Inscrit</th>
+                <th scope="col" class="d-none d-sm-table-cell">Organisateur</th>
+                <th scope="col" class="d-sm-none">Lieu</th>
+                <th scope="col" class="d-none d-sm-table-cell">Actions</th>
             </tr>
             </thead>
             <tbody class="table-group-divider">
@@ -19,13 +20,13 @@
                     and (sortie.etat.value != "creee" or sortie.organisateur == app.user)
                     and (sortie.etat.value != "annulee" or sortie.organisateur == app.user or sortie.participants.contains(app.user)) %}
                     <tr>
-                        <td class="text-truncate" style="max-width: 150px;">{{ sortie.nom }}</td>
+                        <td class="text-truncate" style="max-width: 150px;"><a href="{{ path('sortie_detail', {id: sortie.id}) }}">{{ sortie.nom }}</a></td>
                         <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
-                        <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
-                        <td>{{ sortie.participants | length }}/{{ sortie.nbInscriptionsMax }}</td>
-                        <td>{{ sortie.etat.value }}</td>
-                        <td>{{ sortie.participants.contains(app.user) ? 'X' : '' }}</td>
-                        <td class="text-truncate" style="max-width: 150px;">
+                        <td class="d-none d-sm-table-cell">{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
+                        <td class="d-none d-sm-table-cell">{{ sortie.participants | length }}/{{ sortie.nbInscriptionsMax }}</td>
+                        <td class="d-none d-sm-table-cell">{{ sortie.etat.value }}</td>
+                        <td class="d-none d-sm-table-cell">{{ sortie.participants.contains(app.user) ? 'X' : '' }}</td>
+                        <td  class="d-none d-sm-table-cell text-truncate" style="max-width: 150px;">
                             <a href="{{ path('profile_show', { id: sortie.organisateur.id }) }}">
                                 {% if sortie.organisateur.pseudo %}
                                     {{ sortie.organisateur.pseudo }}
@@ -33,7 +34,8 @@
                                     {{ sortie.organisateur.nom | capitalize }} {{ sortie.organisateur.prenom | slice(0, 1) }}
                                     .
                                 {% endif %}</a></td>
-                        <td class="text-nowrap">
+                        <td class="d-sm-none">{{ sortie.lieu.ville.nom | upper }}</td>
+                        <td class="d-none d-sm-table-cell text-nowrap">
                             {% if sortie.etat.value == "creee" and sortie.organisateur == app.user %}
                                 <a class="btn btn-primary btn-sm sortie-btn-icone"
                                    href="{{ path('sortie_detail', {id: sortie.id}) }}">
