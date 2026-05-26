@@ -76,7 +76,7 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function detail(Request $request, SortieService $sortieService, int $id): Response
+    public function detail(SortieService $sortieService, int $id): Response
     {
         try {
             $sortie = $sortieService->getSortieDetail($id);
@@ -118,7 +118,7 @@ final class SortieController extends AbstractController
 
     #[Route('/{id}/annuler', name: 'annuler', methods: ['GET', 'POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function annuler(Sortie $sortie, Request $request, SortieService $sortieService, MailService $mailService): Response
+    public function annuler(Sortie $sortie, Request $request, SortieService $sortieService): Response
     {
         $dto = new AnnulationDTO();
         $form = $this->createForm(AnnulationDTOType::class, $dto);
