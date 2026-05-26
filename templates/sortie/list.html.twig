@@ -38,7 +38,7 @@
                             Tous les sites
                         </option>
                         {% for site in sites %}
-                            <option value="{{ site.nom }}" {{ app.request.query.get('site') == site.nom ? 'selected' }}>
+                            <option value="{{ site.id }}" {{ app.request.query.get('site') == site.nom ? 'selected' }}>
                                 {{ site.nom }}
                             </option>
                         {% endfor %}
