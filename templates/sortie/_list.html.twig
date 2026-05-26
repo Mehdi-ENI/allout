@@ -1,18 +1,18 @@
 <turbo-frame id="liste-sorties">
-    <table class="table">
+    <table class="table table-hover">
         <thead>
-        <tr>
-            <th>Nom de la sortie</th>
-            <th>Date de la sortie</th>
-            <th>Clotûre</th>
-            <th>Inscrits/places</th>
-            <th>État</th>
-            <th>Inscrit</th>
-            <th>Organisateur</th>
-            <th>Actions</th>
+        <tr class="table-secondary">
+            <th scope="col">Nom de la sortie</th>
+            <th scope="col">Date de la sortie</th>
+            <th scope="col">Clotûre</th>
+            <th scope="col">Inscrits/places</th>
+            <th scope="col">État</th>
+            <th scope="col">Inscrit</th>
+            <th scope="col">Organisateur</th>
+            <th scope="col">Actions</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody class="table-group-divider">
         {% for sortie in sorties %}
             {% if sortie.etat.value != "archivee"
                 and (sortie.etat.value != "creee" or sortie.organisateur == app.user)
@@ -25,8 +25,13 @@
                     <td>{{ sortie.etat.value }}</td>
                     <td>{{ sortie.participants.contains(app.user) ? 'X' : '' }}</td>
                     <td>
-                        <a href="{{ path('profile_show', { id: sortie.organisateur.id }) }}">{{ sortie.organisateur.nom | capitalize }} {{ sortie.organisateur.prenom | slice(0, 1) }}
-                            .</a></td>
+                        <a href="{{ path('profile_show', { id: sortie.organisateur.id }) }}">
+                            {% if sortie.organisateur.pseudo %}
+                                {{ sortie.organisateur.pseudo }}
+                            {% else %}
+                                {{ sortie.organisateur.nom | capitalize }} {{ sortie.organisateur.prenom | slice(0, 1) }}
+                                .
+                            {% endif %}</a></td>
                     <td>
                         {% if sortie.etat.value == "creee" and sortie.organisateur == app.user %}
                             <a class="btn btn-primary" href="{{ path('sortie_detail', {id: sortie.id}) }}">Afficher</a>
@@ -40,7 +45,8 @@
                             <a class="btn btn-primary" href="{{ path('sortie_detail', {id: sortie.id}) }}">Afficher</a>
                             {% if app.user %}
                                 {% if sortie.organisateur == app.user %}
-                                    <a class="btn btn-danger" href="{{ path('sortie_annuler', {id: sortie.id}) }}">Annuler</a>
+                                    <a class="btn btn-danger"
+                                       href="{{ path('sortie_annuler', {id: sortie.id}) }}">Annuler</a>
                                 {% elseif sortie.participants.contains(app.user) %}
                                     <form method="post" action="{{ path('sortie_desistement', {id: sortie.id}) }}">
                                         <input type="hidden" name="_token"
@@ -68,5 +74,17 @@
             </tr>
         {% endfor %}
         </tbody>
+        <tfoot class="table-group-divider">
+        <tr class="table-secondary">
+            <th scope="col">Nom de la sortie</th>
+            <th scope="col">Date de la sortie</th>
+            <th scope="col">Clotûre</th>
+            <th scope="col">Inscrits/places</th>
+            <th scope="col">État</th>
+            <th scope="col">Inscrit</th>
+            <th scope="col">Organisateur</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </tfoot>
     </table>
 </turbo-frame>

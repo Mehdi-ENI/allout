@@ -15,7 +15,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class SortieService
 {
     public function __construct(private readonly EntityManagerInterface $entityManager,
-                                private readonly SortieRepository       $sortieRepository)
+                                private readonly SortieRepository       $sortieRepository,
+                                private readonly MailService            $mailService)
     {
     }
 
@@ -45,19 +46,13 @@ class SortieService
     public function annulerSortie(Sortie $sortie, string $motif): void
     {
         $etat = $sortie->getEtat();
-
         if (in_array($etat, [Etat::EnCours, Etat::Terminee, Etat::Archivee, Etat::Annulee])) {
             throw new \DomainException('Impossible d\'annuler une sortie déjà commencée, terminée ou annulée.');
         }
-
         $sortie->setAnnulee(true);
         $sortie->setMotifAnnulation($motif);
-
-        foreach ($sortie->getParticipants() as $participant) {
-            // TODO envoi mail
-        }
-
         $this->entityManager->flush();
+        $this->mailService->sendAnnulationSortie($sortie);
     }
 
     public function inscription(int $id, Participant $participant): void
@@ -123,7 +118,7 @@ class SortieService
             throw new \DomainException('Seules les sorties en état "Créée" peuvent être supprimées.');
         }
 
-        if(
+        if (
             $sortie->getOrganisateur() !== $participant
             && !in_array('ROLE_ADMIN', $participant->getRoles())
         ) {
