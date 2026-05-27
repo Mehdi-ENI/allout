@@ -39,9 +39,16 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <strong>Lieu :</strong><br>
-                    {{ sortie.lieu.nom ~ ' - ' ~ sortie.lieu.rue ~ ' - ' ~ sortie.lieu.ville.nom ~ ' (' ~ sortie.lieu.ville.codePostal ~ ')' }}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Lieu :</strong><br>
+                        {{ sortie.lieu.nom ~ ' - ' ~ sortie.lieu.rue ~ ' - ' ~ sortie.lieu.ville.nom ~ ' (' ~ sortie.lieu.ville.codePostal ~ ')' }}
+                    </div>
+
+                    <div class="col-md-6">
+                        <strong>Site :</strong><br>
+                        {{ sortie.site.nom }}
+                    </div>
                 </div>
 
                 <div class="mb-3">

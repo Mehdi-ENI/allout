@@ -197,6 +197,7 @@ final class SortieController extends AbstractController
      *                      - le formulaire,
      *                      - ou une redirection après sauvegarde.
      */
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/{id}/update', name: 'update', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function update(int                    $id,
                            Request                $request,
@@ -210,8 +211,13 @@ final class SortieController extends AbstractController
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Participant $user */
+            $user = $this->getUser();
 
             try {
+                if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+                    $sortie->setSite($user->getSite());
+                }
                 $entityManager->flush();
                 $this->addFlash('success', 'Sortie mise à jour avec succès');
                 return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
