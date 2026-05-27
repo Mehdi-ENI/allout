@@ -39,8 +39,9 @@ class RegistrationController extends AbstractController
             $entityManager->flush();
 
             // do anything else you need here, like send an email
-
-            return $this->redirectToRoute('sortie_list');
+            // Affichage d'un flash message
+            $this->addFlash('success', 'Le compte de ' . $user->getPrenom() . ' ' . $user->getNom() . ' a bien été créé !');
+            return $this->redirectToRoute('participant_list');
         }
 
         return $this->render('registration/register.html.twig', [
