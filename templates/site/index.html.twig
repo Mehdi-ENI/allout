@@ -2,11 +2,6 @@
 
 {% block title %}Gérer les sites{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('styles/site.css') }}">
-{% endblock %}
-
 {% block body %}
     <div class="container">
 
@@ -38,7 +33,7 @@
                     </div>
                 </div>
                 <div class="col-auto">
-                    <button type="submit" class="btn btn-primary btn-sm site-btn-icone">
+                    <button type="submit" class="btn btn-primary btn-sm my-btn-icone">
                         <i class="bi bi-search"></i> <span>Rechercher</span>
                     </button>
                 </div>
@@ -46,11 +41,11 @@
         </form>
 
         <div class="border rounded p-3 overflow-x-auto">
-            <table class="table table-hover" style="--bs-table-bg: transparent;">
+            <table class="table table-hover w-auto" style="--bs-table-bg: transparent;">
                 <thead>
                 <tr style="--bs-table-bg: transparent;">
                     <th>Site</th>
-                    <th>Actions</th>
+                    <th style="width: 1%">Actions</th>
                 </tr>
                 </thead>
                 <tbody class="table-group-divider">
@@ -63,7 +58,7 @@
                         }) }}
                     </td>
                     <td class="text-nowrap">
-                        <button type="submit" form="form-ajout" class="btn btn-success btn-sm site-btn-icone">
+                        <button type="submit" form="form-ajout" class="btn btn-primary btn-sm my-btn-icone">
                             <i class="bi bi-plus-circle"></i> <span>Ajouter</span>
                         </button>
                     </td>
@@ -81,22 +76,22 @@
                         </td>
                         <td class="text-nowrap">
                             <span class="actions-affichage">
-                                <a href="#" class="btn btn-warning btn-sm btn-modifier site-btn-icone" data-id="{{ site.id }}">
+                                <a href="#" class="btn btn-warning btn-sm btn-modifier my-btn-icone" data-id="{{ site.id }}">
                                     <i class="bi bi-pencil"></i> <span>Modifier</span>
                                 </a>
                                 <form method="post" action="{{ path('app_site_delete', {'id': site.id}) }}" class="d-inline">
                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ site.id) }}">
-                                    <button type="submit" class="btn btn-danger btn-sm site-btn-icone"
+                                    <button type="submit" class="btn btn-danger btn-sm my-btn-icone"
                                             onclick="return confirm('Supprimer ce site ?')">
                                         <i class="bi bi-trash"></i> <span>Supprimer</span>
                                     </button>
                                 </form>
                             </span>
                             <span class="actions-edition" style="display:none;">
-                                <button type="submit" form="form-edit-{{ site.id }}" class="btn btn-success btn-sm site-btn-icone">
+                                <button type="submit" form="form-edit-{{ site.id }}" class="btn btn-success btn-sm my-btn-icone">
                                     <i class="bi bi-check-lg"></i> <span>Enregistrer</span>
                                 </button>
-                                <a href="#" class="btn btn-secondary btn-sm btn-annuler site-btn-icone" data-id="{{ site.id }}">
+                                <a href="#" class="btn btn-secondary btn-sm btn-annuler my-btn-icone" data-id="{{ site.id }}">
                                     <i class="bi bi-x-lg"></i> <span>Annuler</span>
                                 </a>
                             </span>

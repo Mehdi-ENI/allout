@@ -38,7 +38,7 @@
                     </div>
                 </div>
                 <div class="col-auto">
-                    <button type="submit" class="btn btn-primary btn-sm ville-btn-icone">
+                    <button type="submit" class="btn btn-primary btn-sm my-btn-icone">
                         <i class="bi bi-search"></i> <span>Rechercher</span>
                     </button>
                 </div>
@@ -51,7 +51,7 @@
                 <tr style="--bs-table-bg: transparent;">
                     <th>Ville</th>
                     <th>Code postal</th>
-                    <th>Actions</th>
+                    <th style="width: 1%">Actions</th>
                 </tr>
                 </thead>
                 <tbody class="table-group-divider">
@@ -69,7 +69,7 @@
                         }) }}
                     </td>
                     <td class="text-nowrap">
-                        <button type="submit" form="form-ajout" class="btn btn-primary btn-sm ville-btn-icone">
+                        <button type="submit" form="form-ajout" class="btn btn-primary btn-sm my-btn-icone">
                             <i class="bi bi-plus-circle"></i> <span>Ajouter</span>
                         </button>
                     </td>
@@ -95,14 +95,14 @@
                         </td>
                         <td class="text-nowrap">
                             <span class="actions-affichage">
-                                <a href="#" class="btn btn-warning btn-sm btn-modifier ville-btn-icone"
+                                <a href="#" class="btn btn-warning btn-sm btn-modifier my-btn-icone"
                                    data-id="{{ ville.id }}">
                                     <i class="bi bi-pencil"></i> <span>Modifier</span>
                                 </a>
                                 <form method="post" action="{{ path('app_ville_delete', {'id': ville.id}) }}"
                                       class="d-inline">
                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ ville.id) }}">
-                                    <button type="submit" class="btn btn-danger btn-sm ville-btn-icone"
+                                    <button type="submit" class="btn btn-danger btn-sm my-btn-icone"
                                             onclick="return confirm('Supprimer cette ville ?')">
                                         <i class="bi bi-trash"></i> <span>Supprimer</span>
                                     </button>
@@ -110,10 +110,10 @@
                             </span>
                             <span class="actions-edition" style="display:none;">
                                 <button type="submit" form="form-edit-{{ ville.id }}"
-                                        class="btn btn-success btn-sm ville-btn-icone">
+                                        class="btn btn-success btn-sm my-btn-icone">
                                     <i class="bi bi-check-lg"></i> <span>Enregistrer</span>
                                 </button>
-                                <a href="#" class="btn btn-secondary btn-sm btn-annuler ville-btn-icone"
+                                <a href="#" class="btn btn-secondary btn-sm btn-annuler my-btn-icone"
                                    data-id="{{ ville.id }}">
                                     <i class="bi bi-x-lg"></i> <span>Annuler</span>
                                 </a>

@@ -38,3 +38,19 @@ textarea {
     border-radius: 5px;
     color: #132135;
 }
+
+@media (max-width: 991px) {
+    .my-btn-icone {
+        min-width: unset !important;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .my-btn-icone span {
+        display: none !important;
+    }
+}
