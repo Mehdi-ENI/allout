@@ -1,13 +1,33 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier le lieu{% endblock %}
+{% block title %}Modifier un lieu{% endblock %}
 
 {% block body %}
-    <h1>Modifier le lieu</h1>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-11">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-warning">
+                        <h2 class="mb-0">Modifier le lieu</h2>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form) }}
+                        {{ include('lieu/_form.html.twig') }}
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <a href="{{ path('app_lieu_index') }}" class="btn btn-secondary">Retour</a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-check-lg"></i> Enregistrer
+                            </button>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
-    {{ include('lieu/_form.html.twig', {'button_label': 'Modifier'}) }}
-
-    <a href="{{ path('app_lieu_index') }}">Retour à la liste</a>
-
-    {{ include('lieu/_delete_form.html.twig') }}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="module" src="{{ asset('js/lieu-map-edit.js') }}"></script>
 {% endblock %}

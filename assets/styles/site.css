@@ -1,0 +1,15 @@
+@media (max-width: 991px) {
+    .site-btn-icone {
+        min-width: unset !important;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .site-btn-icone span {
+        display: none !important;
+    }
+}
