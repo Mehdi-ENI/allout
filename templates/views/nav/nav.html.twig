@@ -14,21 +14,32 @@
 
         <div class="collapse navbar-collapse" id="navbarMain">
 
+            {# Liens à gauche — Participants (admin uniquement) #}
+            {% if is_granted('ROLE_ADMIN') %}
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('participant_list') }}">Participants</a>
+                    </li>
+                </ul>
+            {% endif %}
+
             {# Liens à droite — visibles uniquement pour les utilisateurs connectés #}
             <ul class="navbar-nav ms-auto align-items-center">
                 {% if app.user %}
 
-                    {# Liens admin (Villes + Sites) — uniquement pour ROLE_ADMIN #}
+                    {# Liens admin (Villes + Sites + Lieux) — uniquement pour ROLE_ADMIN #}
                     {% if is_granted('ROLE_ADMIN') %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('app_ville_index') }}">Villes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_lieu_index') }}">Lieux</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('app_site_index') }}">Sites</a>
                         </li>
                     {% endif %}
 
-                    {# Liens communs à tous les utilisateurs connectés #}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('sortie_list') }}">Accueil</a>
                     </li>
@@ -38,6 +49,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_logout') }}">Se déconnecter</a>
                     </li>
+                    {% else %}
+                        {# Pour les invités : bouton de connexion #}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_login') }}">Se connecter</a>
+                        </li>
 
                 {% endif %}
             </ul>
