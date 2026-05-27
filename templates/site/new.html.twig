@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Site{% endblock %}
+{% block title %}Nouveau site{% endblock %}
 
 {% block body %}
-    <h1>Create new Site</h1>
+    <h1>Créer un nouveau site</h1>
 
     {{ include('site/_form.html.twig') }}
 
-    <a href="{{ path('app_site_index') }}">back to list</a>
+    <a href="{{ path('app_site_index') }}">Retour à la liste</a>
 {% endblock %}
