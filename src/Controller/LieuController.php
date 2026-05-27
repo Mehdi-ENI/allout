@@ -95,8 +95,15 @@ final class LieuController extends AbstractController
     public function delete(Request $request, Lieu $lieu, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$lieu->getId(), $request->getPayload()->getString('_token'))) {
+            // Vérification : impossible de supprimer si des sorties y sont rattachées
+            if ($lieu->getSorties()->count() > 0) {
+                $this->addFlash('error', 'Impossible de supprimer ce lieu : des sorties y sont associées.');
+                return $this->redirectToRoute('app_lieu_index', [], Response::HTTP_SEE_OTHER);
+            }
+
             $entityManager->remove($lieu);
             $entityManager->flush();
+            $this->addFlash('success', 'Lieu supprimé avec succès.');
         }
 
         return $this->redirectToRoute('app_lieu_index', [], Response::HTTP_SEE_OTHER);

@@ -81,8 +81,16 @@ final class SiteController extends AbstractController
     public function delete(Request $request, Site $site, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$site->getId(), $request->getPayload()->getString('_token'))) {
+
+            // Vérification : impossible de supprimer si des sorties ou des participants y sont rattachés
+            if ($site->getSorties()->count() > 0 || $site->getParticipants()->count() > 0) {
+                $this->addFlash('error', 'Impossible de supprimer ce site : des sorties ou des participants y sont rattachés.');
+                return $this->redirectToRoute('app_site_index', [], Response::HTTP_SEE_OTHER);
+            }
+
             $entityManager->remove($site);
             $entityManager->flush();
+            $this->addFlash('success', 'Site supprimé avec succès.');
         }
 
         return $this->redirectToRoute('app_site_index', [], Response::HTTP_SEE_OTHER);
