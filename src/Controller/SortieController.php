@@ -13,6 +13,7 @@ use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
 use App\Service\MailService;
 use App\Service\SortieService;
+use App\Service\SortieStateResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,9 +22,42 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+/**
+ * Contrôleur de gestion des sorties.
+ *
+ * Gère :
+ * - la création ;
+ * - l'affichage ;
+ * - la modification ;
+ * - les inscriptions ;
+ * - les désistements ;
+ * - la publication ;
+ * - l'annulation ;
+ * - la suppression des sorties.
+ */
 #[Route('/sortie', name: 'sortie_')]
 final class SortieController extends AbstractController
 {
+    /**
+     *  Affiche et traite le formulaire de création d'une sortie.
+     *  L'utilisateur doit être connecté pour accéder à cette page.
+     *
+     *  Fonctionnement :
+     *  - crée une nouvelle entité Sortie,
+     *  - construit le formulaire associé,
+     *  - valide les données envoyées,
+     *  - associe l'utilisateur connecté comme organisateur,
+     *  - délègue la sauvegarde au service métier.
+     *
+     *  Un formulaire secondaire permet également d'ajouter un lieu
+     *  directement depuis une modale Bootstrap.
+     *
+     * @param Request $request - Contient la requête HTTP et les données du formulaire.
+     * @param SortieService $sortieService - Service métier chargé de la création de la sortie.
+     * @return Response - Retourne :
+     *                      - la page du formulaire,
+     *                      - ou une redirection vers le détail de la sortie.
+     */
     #[Route('/create', name: 'create')]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function create(Request $request, SortieService $sortieService): Response
@@ -32,16 +66,24 @@ final class SortieController extends AbstractController
         $sortie = new Sortie();
         $sortieForm = $this->createForm(SortieType::class, $sortie);
 
+        /**
+        * Formulaire utilisé dans la modale d'ajout rapide d'un lieu.
+        */
         $lieu = new Lieu();
         $lieuForm = $this->createForm(LieuType::class, $lieu);
 
         $sortieForm->handleRequest($request);
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
-            // Organisateur connecté
-            $sortie->setOrganisateur($this->getUser());
+            /** @var Participant $user */
+            $user = $this->getUser();
+
+            $sortie->setOrganisateur($user);
+
+            if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+                $sortie->setSite($user->getSite());
+            }
 
             try {
-
                 $sortieService->creerSortie($sortie);
                 $this->addFlash('success', 'Sortie créée avec succès');
 
@@ -60,51 +102,111 @@ final class SortieController extends AbstractController
         ]);
     }
 
+    /**
+     * Affiche la liste des sorties avec filtres.
+     * Cette page permet :
+     * - d'afficher les sorties,
+     * - d'appliquer des filtres de recherche,
+     * - d'afficher le site par défaut de l'utilisateur connecté.
+     *
+     * Les états des sorties sont calculés via le SortieStateResolver afin d'éviter toute logique métier dans Twig.
+     *
+     * @param SortieRepository $sortieRepository - Repository utilisé pour récupérer les sorties filtrées.
+     *
+     * @param SiteRepository $siteRepository - Repository utilisé pour récupérer la liste des sites.
+     * @param SortieStateResolver $sortieStateResolver - Service chargé de calculer l'état métier d'une sortie.
+     * @param Request $request - Requête HTTP contenant les filtres éventuels.
+     * @return Response - Retourne la page contenant la liste des sorties.
+     */
     #[Route('/list', name: 'list')]
     public function list(SortieRepository $sortieRepository,
                          SiteRepository   $siteRepository,
-                         Request          $request): Response
-    {
+                         SortieStateResolver $sortieStateResolver,
+                         Request          $request): Response{
         $filters = $request->query->all();
 
-        // 'site' absent = premier chargement, on met le site par défaut
-        // 'site' vide = l'utilisateur a choisi "Tous les sites", on ne touche pas
+        /*
+         * Premier chargement :
+         * on applique automatiquement le site
+         * de l'utilisateur connecté.
+         */
         if (!$request->query->has('site') && $this->getUser()) {
             /** @var Participant $user */
             $user = $this->getUser();
             $filters['site'] = $user->getSite()?->getId();
         }
 
-        $sortie = $sortieRepository->findWithFilters($filters);
+        $sorties = $sortieRepository->findWithFilters($filters);
+
+        /*
+         * Préparation des données pour Twig.
+         * Chaque sortie est accompagnée de son état calculé.
+         */
+        $sortiesAvecEtat = [];
+
+        foreach ($sorties as $sortie) {
+
+            $sortiesAvecEtat[] = [
+                'sortie' => $sortie,
+                'etat' => $sortieStateResolver->resolve($sortie),
+            ];
+        }
+
         $sites = $siteRepository->findAll();
 
         return $this->render('sortie/list.html.twig', [
-            'sorties' => $sortie,
+            'sorties' => $sortiesAvecEtat,
             'sites' => $sites
         ]);
     }
 
+    /**
+     * Affiche le détail d'une sortie.
+     * @param SortieService $sortieService - Service métier utilisé pour récupérer une sortie.
+     * @param SortieStateResolver $sortieStateResolver - Service chargé de calculer l'état métier de la sortie.
+     * @param int $id -  Identifiant de la sortie.
+     * @return Response - Retourne :
+     *                      - la page de détail,
+     *                      - ou une redirection si la sortie n'existe pas.
+     */
     #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function detail(SortieService $sortieService, int $id): Response
+    public function detail(SortieService $sortieService, SortieStateResolver $sortieStateResolver, int $id): Response
     {
         try {
             $sortie = $sortieService->getSortieDetail($id);
+            $etat = $sortieStateResolver->resolve($sortie);
+
             return $this->render('sortie/detail.html.twig', [
-                'sortie' => $sortie
+                'sortie' => $sortie,
+                'etat' => $etat,
             ]);
         } catch (\Exception $e) {
             $this->addFlash('error', $e->getMessage());
-            return $this->redirectToRoute('sortie_list');
         }
+        return $this->redirectToRoute('sortie_list');
     }
 
+    /**
+     * Permet à l'organisateur de modifier les informations d'une sortie existante.
+     *
+     * @param int $id -  Identifiant de la sortie à modifier.
+     * @param Request $request - Contient les données du formulaire.
+     * @param SortieService $sortieService - Service métier utilisé pour récupérer la sortie.
+     * @param EntityManagerInterface $entityManager - Gestionnaire Doctrine utilisé pour sauvegarder les modifications.
+     * @return Response - Retourne :
+     *                      - le formulaire,
+     *                      - ou une redirection après sauvegarde.
+     */
     #[Route('/{id}/update', name: 'update', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function update(int                    $id,
                            Request                $request,
                            SortieService          $sortieService,
+                           SortieStateResolver    $sortieStateResolver,
                            EntityManagerInterface $entityManager): Response
     {
         $sortie = $sortieService->getSortieDetail($id);
+        $etat = $sortieStateResolver->resolve($sortie);
+
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -122,9 +224,26 @@ final class SortieController extends AbstractController
         return $this->render('sortie/update.html.twig', [
             'sortieForm' => $form,
             'sortie' => $sortie,
+            'etat' => $etat,
         ]);
     }
 
+    /**
+     * Permet d'annuler une sortie.
+     * L'utilisateur doit être connecté.
+     *
+     * Une sortie annulée :
+     * - change d'état,
+     * - possède un motif d'annulation,
+     * - déclenche l'envoi d'e-mails aux participants.
+     *
+     * @param Sortie $sortie - Sortie automatiquement récupérée par Symfony.
+     * @param Request $request - Contient les données du formulaire d'annulation.
+     * @param SortieService $sortieService - Service métier chargé de l'annulation.
+     * @return Response - Retourne :
+     *                      - le formulaire d'annulation,
+     *                      - ou une redirection après validation.
+     */
     #[Route('/{id}/annuler', name: 'annuler', methods: ['GET', 'POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function annuler(Sortie $sortie, Request $request, SortieService $sortieService): Response
@@ -149,6 +268,18 @@ final class SortieController extends AbstractController
         ]);
     }
 
+    /**
+     * Inscrit un participant à une sortie.
+     * Vérifie :
+     * - le token CSRF,
+     * - l'état de la sortie,
+     * - les règles métier d'inscription.
+     *
+     * @param Request $request - Contient le token CSRF envoyé par le formulaire.
+     * @param SortieService $sortieService - Service métier chargé de gérer l'inscription.
+     * @param int $id - Identifiant de la sortie.
+     * @return Response - Redirige vers la liste des sorties.
+     */
     #[Route('/{id}/inscription', name: 'inscription', requirements: ['id' => '\d+'], methods: ['POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function inscription(Request $request, SortieService $sortieService, int $id): Response
@@ -171,6 +302,18 @@ final class SortieController extends AbstractController
         return $this->redirectToRoute('sortie_list');
     }
 
+    /**
+     * Désinscrit un participant d'une sortie.
+     * Vérifie :
+     * - le token CSRF,
+     * - que le participant est inscrit,
+     * - que la sortie autorise encore le désistement.
+     *
+     * @param Request $request - Contient le token CSRF du formulaire.
+     * @param SortieService $sortieService - Service métier chargé du désistement.
+     * @param int $id - Identifiant de la sortie.
+     * @return Response
+     */
     #[Route('/{id}/desistement', name: 'desistement', requirements: ['id' => '\d+'], methods: ['POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function desistement(Request $request, SortieService $sortieService, int $id): Response
@@ -194,12 +337,14 @@ final class SortieController extends AbstractController
     }
 
     /**
-     * Cette focntions sefsefsef
+     * Publie une sortie.
+     * Une sortie publiée devient visible et ouverte aux inscriptions.
+     * Seul l'organisateur peut publier sa sortie.
      *
-     * @param Request $request
-     * @param SortieService $sortieService
-     * @param int $id
-     * @return Response
+     * @param Request $request - Contient le token CSRF.
+     * @param SortieService $sortieService - Service métier chargé de la publication.
+     * @param int $id - Identifiant de la sortie.
+     * @return Response - Redirection vers la liste des sorties.
      */
     #[Route('/{id}/publication', name: 'publication', requirements: ['id' => '\d+'], methods: ['POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -223,6 +368,16 @@ final class SortieController extends AbstractController
         return $this->redirectToRoute('sortie_list');
     }
 
+    /**
+     * Supprime une sortie.
+     * Conditions :
+     * - sortie en état "Créée"
+     * - utilisateur organisateur ou administrateur
+     *
+     * @param Request $request - Contient le token CSRF.
+     * @param SortieService $sortieService - Service métier chargé de la suppression.
+     * @return Response - Redirection vers la liste des sorties.
+     */
     #[Route('/{id}/delete', name: 'delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function delete(int $id, Request $request, SortieService $sortieService): Response
