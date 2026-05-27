@@ -1,41 +1,142 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Site index{% endblock %}
+{% block title %}Gérer les sites{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/site.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h1>Site index</h1>
+    <div class="container">
 
-    <form method="get" action="{{ path('app_site_index') }}">
-        <label for="recherche">Le nom contient :</label>
-        <input type="text" id="recherche" name="recherche" value="{{ recherche }}">
-        <button type="submit">Rechercher</button>
-    </form>
+        <h2>Gérer les sites</h2>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
+        {# Formulaires d'édition hors tableau #}
         {% for site in sites %}
-            <tr>
-                <td>{{ site.id }}</td>
-                <td>{{ site.nom }}</td>
-                <td>
-                    <a href="{{ path('app_site_show', {'id': site.id}) }}">show</a>
-                    <a href="{{ path('app_site_edit', {'id': site.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">Aucun résultat trouvé</td>
-            </tr>
+            {{ form_start(formsEdit[site.id], {'attr': {'id': 'form-edit-' ~ site.id}}) }}
+            {{ form_widget(formsEdit[site.id]._token) }}
+            {{ form_end(formsEdit[site.id], {'render_rest': false}) }}
         {% endfor %}
-        </tbody>
-    </table>
 
-    <a href="{{ path('app_site_new') }}">Ajouter</a>
+        {# Formulaire d'ajout hors tableau #}
+        {{ form_start(formNew, {'attr': {'id': 'form-ajout'}}) }}
+        {{ form_widget(formNew._token) }}
+        {{ form_end(formNew, {'render_rest': false}) }}
+
+        <h5>Filtrer les sites</h5>
+        <form class="mb-3" method="get" action="{{ path('app_site_index') }}">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <label for="recherche" class="col-form-label">Le nom contient :</label>
+                </div>
+                <div class="col-auto">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="recherche" class="form-control form-control-sm"
+                               name="recherche" placeholder="Rechercher" value="{{ recherche }}">
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary btn-sm site-btn-icone">
+                        <i class="bi bi-search"></i> <span>Rechercher</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="border rounded p-3 overflow-x-auto">
+            <table class="table table-hover" style="--bs-table-bg: transparent;">
+                <thead>
+                <tr style="--bs-table-bg: transparent;">
+                    <th>Site</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody class="table-group-divider">
+
+                {# Ligne d'ajout épinglée en haut #}
+                <tr>
+                    <td>
+                        {{ form_widget(formNew.nom, {
+                            'attr': {'form': 'form-ajout', 'class': 'form-control form-control-sm', 'placeholder': 'Nouveau site'}
+                        }) }}
+                    </td>
+                    <td class="text-nowrap">
+                        <button type="submit" form="form-ajout" class="btn btn-success btn-sm site-btn-icone">
+                            <i class="bi bi-plus-circle"></i> <span>Ajouter</span>
+                        </button>
+                    </td>
+                </tr>
+
+                {% for site in sites %}
+                    <tr id="ligne-{{ site.id }}">
+                        <td>
+                            <span class="nom-texte">{{ site.nom }}</span>
+                            <span class="champ-edition" style="display:none;">
+                                {{ form_widget(formsEdit[site.id].nom, {
+                                    'attr': {'form': 'form-edit-' ~ site.id, 'class': 'form-control form-control-sm'}
+                                }) }}
+                            </span>
+                        </td>
+                        <td class="text-nowrap">
+                            <span class="actions-affichage">
+                                <a href="#" class="btn btn-warning btn-sm btn-modifier site-btn-icone" data-id="{{ site.id }}">
+                                    <i class="bi bi-pencil"></i> <span>Modifier</span>
+                                </a>
+                                <form method="post" action="{{ path('app_site_delete', {'id': site.id}) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ site.id) }}">
+                                    <button type="submit" class="btn btn-danger btn-sm site-btn-icone"
+                                            onclick="return confirm('Supprimer ce site ?')">
+                                        <i class="bi bi-trash"></i> <span>Supprimer</span>
+                                    </button>
+                                </form>
+                            </span>
+                            <span class="actions-edition" style="display:none;">
+                                <button type="submit" form="form-edit-{{ site.id }}" class="btn btn-success btn-sm site-btn-icone">
+                                    <i class="bi bi-check-lg"></i> <span>Enregistrer</span>
+                                </button>
+                                <a href="#" class="btn btn-secondary btn-sm btn-annuler site-btn-icone" data-id="{{ site.id }}">
+                                    <i class="bi bi-x-lg"></i> <span>Annuler</span>
+                                </a>
+                            </span>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="2">Aucun résultat trouvé</td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        document.querySelectorAll('.btn-modifier').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const id = this.dataset.id;
+                const ligne = document.getElementById('ligne-' + id);
+                ligne.querySelector('.nom-texte').style.display = 'none';
+                ligne.querySelector('.champ-edition').style.display = 'inline';
+                ligne.querySelector('.actions-affichage').style.display = 'none';
+                ligne.querySelector('.actions-edition').style.display = 'inline';
+            });
+        });
+
+        document.querySelectorAll('.btn-annuler').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const id = this.dataset.id;
+                const ligne = document.getElementById('ligne-' + id);
+                ligne.querySelector('.nom-texte').style.display = 'inline';
+                ligne.querySelector('.champ-edition').style.display = 'none';
+                ligne.querySelector('.actions-affichage').style.display = 'inline';
+                ligne.querySelector('.actions-edition').style.display = 'none';
+            });
+        });
+    </script>
 {% endblock %}

@@ -1,4 +1,15 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Enregistrer') }}</button>
-{{ form_end(form) }}
+{{ form_row(form.nom) }}
+{{ form_row(form.rue) }}
+<div class="row">
+    <div class="col-md-6">{{ form_row(form.latitude) }}</div>
+    <div class="col-md-6">{{ form_row(form.longitude) }}</div>
+</div>
+{{ form_row(form.ville) }}
+<div class="mb-3">
+    <label class="form-label">Emplacement sur la carte</label>
+    <p class="text-muted small mb-1">Cliquez sur la carte pour définir la position.</p>
+    <div id="map-create-lieu"
+         data-lat="{{ form.vars.data.latitude ?? '' }}"
+         data-lng="{{ form.vars.data.longitude ?? '' }}"
+         style="height: 400px; border-radius: 8px;"></div>
+</div>

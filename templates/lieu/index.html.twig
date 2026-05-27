@@ -1,49 +1,85 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Lieu index{% endblock %}
+{% block title %}Gérer les lieux{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/lieu.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h1>Lieu index</h1>
+    <div class="container">
 
-    <form method="get" action="{{ path('app_lieu_index') }}">
-        <label for="recherche">Le nom contient :</label>
-        <input type="text" id="recherche" name="recherche" value="{{ recherche }}">
-        <button type="submit">Rechercher</button>
-    </form>
+        <h2>Gérer les lieux</h2>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom</th>
-                <th>Rue</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
-                <th>Ville</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for lieu in lieus %}
-            <tr>
-                <td>{{ lieu.id }}</td>
-                <td>{{ lieu.nom }}</td>
-                <td>{{ lieu.rue }}</td>
-                <td>{{ lieu.latitude }}</td>
-                <td>{{ lieu.longitude }}</td>
-                <td>{{ lieu.ville.nom }}</td>
-                <td>
-                    <a href="{{ path('app_lieu_show', {'id': lieu.id}) }}">show</a>
-                    <a href="{{ path('app_lieu_edit', {'id': lieu.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">Aucun résultat trouvé</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <h5>Filtrer les lieux</h5>
+        <form class="mb-3" method="get" action="{{ path('app_lieu_index') }}">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <label for="recherche" class="col-form-label">Le nom contient :</label>
+                </div>
+                <div class="col-auto">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="recherche" class="form-control form-control-sm"
+                               name="recherche" placeholder="Rechercher" value="{{ recherche }}">
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary btn-sm lieu-btn-icone">
+                        <i class="bi bi-search"></i> <span>Rechercher</span>
+                    </button>
+                </div>
+                <div class="col-auto ms-auto">
+                    <a href="{{ path('app_lieu_new') }}" class="btn btn-success btn-sm lieu-btn-icone">
+                        <i class="bi bi-plus-circle"></i> <span>Ajouter un lieu</span>
+                    </a>
+                </div>
+            </div>
+        </form>
 
-    <a href="{{ path('app_lieu_new') }}">Ajouter</a>
+        <div class="border rounded p-3 overflow-x-auto">
+            <table class="table table-hover" style="--bs-table-bg: transparent;">
+                <thead>
+                <tr style="--bs-table-bg: transparent;">
+                    <th>Nom</th>
+                    <th>Rue</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Ville</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                {% for lieu in lieux %}
+                    <tr>
+                        <td>{{ lieu.nom }}</td>
+                        <td>{{ lieu.rue }}</td>
+                        <td>{{ lieu.latitude }}</td>
+                        <td>{{ lieu.longitude }}</td>
+                        <td>{{ lieu.ville.nom }}</td>
+                        <td class="text-nowrap">
+                            <a href="{{ path('app_lieu_edit', {'id': lieu.id}) }}"
+                               class="btn btn-warning btn-sm lieu-btn-icone">
+                                <i class="bi bi-pencil"></i> <span>Modifier</span>
+                            </a>
+                            <form method="post" action="{{ path('app_lieu_delete', {'id': lieu.id}) }}" class="d-inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ lieu.id) }}">
+                                <button type="submit" class="btn btn-danger btn-sm lieu-btn-icone"
+                                        onclick="return confirm('Supprimer ce lieu ?')">
+                                    <i class="bi bi-trash"></i> <span>Supprimer</span>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6">Aucun résultat trouvé</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
 {% endblock %}
