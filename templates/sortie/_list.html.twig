@@ -15,16 +15,19 @@
             </tr>
             </thead>
             <tbody class="table-group-divider">
-            {% for sortie in sorties %}
-                {% if sortie.etat.value != "archivee"
-                    and (sortie.etat.value != "creee" or sortie.organisateur == app.user)
-                    and (sortie.etat.value != "annulee" or sortie.organisateur == app.user or sortie.participants.contains(app.user)) %}
+            {% for item in sorties %}
+                {% set sortie = item.sortie %}
+                {% set etat = item.etat %}
+
+                {% if etat.value != "archivee"
+                    and (etat.value != "creee" or sortie.organisateur == app.user)
+                    and (etat.value != "annulee" or sortie.organisateur == app.user or sortie.participants.contains(app.user)) %}
                     <tr>
                         <td class="text-truncate" style="max-width: 150px;"><a href="{{ path('sortie_detail', {id: sortie.id}) }}">{{ sortie.nom }}</a></td>
                         <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
                         <td class="d-none d-sm-table-cell">{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
                         <td class="d-none d-sm-table-cell">{{ sortie.participants | length }}/{{ sortie.nbInscriptionsMax }}</td>
-                        <td class="d-none d-sm-table-cell">{{ sortie.etat.value }}</td>
+                        <td class="d-none d-sm-table-cell">{{ etat.value }}</td>
                         <td class="d-none d-sm-table-cell">{{ sortie.participants.contains(app.user) ? 'X' : '' }}</td>
                         <td  class="d-none d-sm-table-cell text-truncate" style="max-width: 150px;">
                             <a href="{{ path('profile_show', { id: sortie.organisateur.id }) }}">
@@ -36,7 +39,7 @@
                                 {% endif %}</a></td>
                         <td class="d-sm-none">{{ sortie.lieu.ville.nom | upper }}</td>
                         <td class="d-none d-sm-table-cell text-nowrap">
-                            {% if sortie.etat.value == "creee" and sortie.organisateur == app.user %}
+                            {% if etat.value == "creee" and sortie.organisateur == app.user %}
                                 <a class="btn btn-primary btn-sm sortie-btn-icone"
                                    href="{{ path('sortie_detail', {id: sortie.id}) }}">
                                     <i class="bi bi-eye"></i>
@@ -56,7 +59,7 @@
                                     </button>
                                 </form>
 
-                            {% elseif sortie.etat.value in ["publiee", "cloturee"] %}
+                            {% elseif etat.value in ["publiee", "cloturee"] %}
                                 <a class="btn btn-primary btn-sm sortie-btn-icone"
                                    href="{{ path('sortie_detail', {id: sortie.id}) }}">
                                     <i class="bi bi-eye"></i>
@@ -77,7 +80,7 @@
                                                 <i class="bi bi-person-dash"></i>
                                                 <span>Se désister</span>
                                             </button>                                        </form>
-                                    {% elseif sortie.etat.value == "publiee" %}
+                                    {% elseif etat.value == "publiee" %}
                                         <form class="d-inline" method="post"
                                               action="{{ path('sortie_inscription', {id: sortie.id}) }}">
                                             <input type="hidden" name="_token"
@@ -89,7 +92,7 @@
                                     {% endif %}
                                 {% endif %}
 
-                            {% elseif sortie.etat.value in ["en_cours", "terminee", "annulee"] %}
+                            {% elseif etat.value in ["en_cours", "terminee", "annulee"] %}
                                 <a class="btn btn-primary btn-sm sortie-btn-icone"
                                    href="{{ path('sortie_detail', {id: sortie.id}) }}">
                                     <i class="bi bi-eye"></i>
