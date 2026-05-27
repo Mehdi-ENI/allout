@@ -1,49 +1,79 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Nom</th>
-            <th>Prénom</th>
-            <th>E-Mail</th>
-            <th>Téléphone</th>
-            <th>Actif</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for participant in participants %}
-            <tr>
-                <td>{{ participant.id }}</td>
-                <td>{{ participant.nom }}</td>
-                <td>{{ participant.prenom}}</td>
-                <td>{{ participant.email}}</td>
-                <td>{{ participant.telephone}}</td>
-                {% if participant.actif == true %}
-                    <td>Actif</td>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+            <h2 class="mb-0">Participants</h2>
+            <a class="btn my-btn-icone btn-primary" href="{{ path('app_register') }}">
+                <i class="bi bi-person-plus"></i>
+                <span>Ajouter un participant</span>
+            </a>
+        </div>
+
+        <div class="border rounded p-3 overflow-x-auto">
+            <table class="table table-hover" style="--bs-table-bg: transparent;">
+                <thead>
+                <tr style="--bs-table-bg: transparent;">
+                    <th scope="col">Nom</th>
+                    <th scope="col" class="d-none d-sm-table-cell">Prénom</th>
+                    <th scope="col" class="d-none d-md-table-cell">E-Mail</th>
+                    <th scope="col" class="d-none d-lg-table-cell">Téléphone</th>
+                    <th scope="col" class="d-none d-sm-table-cell">État</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                {% for participant in participants %}
+                    <tr>
+                        <td class="text-truncate" style="max-width: 150px;">
+                            <a href="{{ path('profile_show', {'id': participant.id}) }}">
+                                {{ participant.prenom }} {{ participant.nom | slice(0,1) }}.
+                            </a>
+                        </td>
+                        <td class="d-none d-sm-table-cell">{{ participant.prenom }}</td>
+                        <td class="d-none d-md-table-cell">{{ participant.email }}</td>
+                        <td class="d-none d-lg-table-cell">{{ participant.telephone }}</td>
+                        <td class="d-none d-sm-table-cell">
+                            {% if participant.actif %}
+                                <span class="badge text-bg-success">Actif</span>
+                            {% else %}
+                                <span class="badge text-bg-secondary">Désactivé</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-nowrap">
+                            <a class="btn btn-primary btn-sm my-btn-icone"
+                               href="{{ path('profile_show', {'id': participant.id}) }}">
+                                <i class="bi bi-eye"></i>
+                                <span>Afficher</span>
+                            </a>
+                            {% if participant.actif %}
+                                <a class="btn btn-warning btn-sm my-btn-icone"
+                                   href="{{ path('participant_desactivate', {'id': participant.id}) }}">
+                                    <i class="bi bi-person-slash"></i>
+                                    <span>Désactiver</span>
+                                </a>
+                            {% else %}
+                                <a class="btn btn-success btn-sm my-btn-icone"
+                                   href="{{ path('participant_activate', {'id': participant.id}) }}">
+                                    <i class="bi bi-person-check"></i>
+                                    <span>Activer</span>
+                                </a>
+                            {% endif %}
+                            <a class="btn btn-danger btn-sm my-btn-icone"
+                               href="{{ path('participant_delete', {'id': participant.id}) }}"
+                               onclick="return confirm('Supprimer {{ participant.prenom }} {{ participant.nom }} ?')">
+                                <i class="bi bi-trash"></i>
+                                <span>Supprimer</span>
+                            </a>
+                        </td>
+                    </tr>
                 {% else %}
-                    <td>Désactivé</td>
-                {% endif %}
-                                <td>
-                                   <a class="btn btn-danger" href="{{ path('participant_delete', {'id': participant.id}) }}" onclick="return confirm('Are you sure you want to delete {{ participant.prenom }} {{ participant.nom}} ?')">Delete</a>
-                                   <a class="btn btn-primary" href="{{ path('profile_show', {'id': participant.id}) }}">View</a>
-                                    {% if participant.actif == true %}
-                                        <a class="btn btn-warning" href="{{ path('participant_desactivate', {'id': participant.id}) }}">Desactivate</a>
-                                    {% else %}
-                                        <a class="btn btn-success" href="{{ path('participant_activate', {'id': participant.id}) }}">Reactivate</a>
-                                    {% endif %}
-                               </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">No partcipants found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <a class="btn btn-outline-primary" href="{{ path('app_register') }}">+</a>
+                    <tr>
+                        <td colspan="6">Aucun participant trouvé</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}
-
-

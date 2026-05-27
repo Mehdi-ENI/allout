@@ -2,11 +2,6 @@
 
 {% block title %}Gérer les lieux{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('styles/lieu.css') }}">
-{% endblock %}
-
 {% block body %}
     <div class="container">
 
@@ -26,12 +21,12 @@
                     </div>
                 </div>
                 <div class="col-auto">
-                    <button type="submit" class="btn btn-primary btn-sm lieu-btn-icone">
+                    <button type="submit" class="btn btn-primary btn-sm my-btn-icone">
                         <i class="bi bi-search"></i> <span>Rechercher</span>
                     </button>
                 </div>
                 <div class="col-auto ms-auto">
-                    <a href="{{ path('app_lieu_new') }}" class="btn btn-success btn-sm lieu-btn-icone">
+                    <a href="{{ path('app_lieu_new') }}" class="btn btn-primary btn-sm my-btn-icone">
                         <i class="bi bi-plus-circle"></i> <span>Ajouter un lieu</span>
                     </a>
                 </div>
@@ -47,7 +42,7 @@
                     <th>Latitude</th>
                     <th>Longitude</th>
                     <th>Ville</th>
-                    <th>Actions</th>
+                    <th style="width: 1%">Actions</th>
                 </tr>
                 </thead>
                 <tbody class="table-group-divider">
@@ -60,12 +55,12 @@
                         <td>{{ lieu.ville.nom }}</td>
                         <td class="text-nowrap">
                             <a href="{{ path('app_lieu_edit', {'id': lieu.id}) }}"
-                               class="btn btn-warning btn-sm lieu-btn-icone">
+                               class="btn btn-warning btn-sm my-btn-icone">
                                 <i class="bi bi-pencil"></i> <span>Modifier</span>
                             </a>
                             <form method="post" action="{{ path('app_lieu_delete', {'id': lieu.id}) }}" class="d-inline">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ lieu.id) }}">
-                                <button type="submit" class="btn btn-danger btn-sm lieu-btn-icone"
+                                <button type="submit" class="btn btn-danger btn-sm my-btn-icone"
                                         onclick="return confirm('Supprimer ce lieu ?')">
                                     <i class="bi bi-trash"></i> <span>Supprimer</span>
                                 </button>

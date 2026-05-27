@@ -11,7 +11,7 @@
                 <th scope="col" class="d-none d-sm-table-cell">Inscrit</th>
                 <th scope="col" class="d-none d-sm-table-cell">Organisateur</th>
                 <th scope="col" class="d-sm-none">Lieu</th>
-                <th scope="col" class="d-none d-sm-table-cell">Actions</th>
+                <th scope="col" class="d-none d-sm-table-cell" style="width: 1%">Actions</th>
             </tr>
             </thead>
             <tbody class="table-group-divider">
@@ -40,12 +40,12 @@
                         <td class="d-sm-none">{{ sortie.lieu.ville.nom | upper }}</td>
                         <td class="d-none d-sm-table-cell text-nowrap">
                             {% if etat.value == "creee" and sortie.organisateur == app.user %}
-                                <a class="btn btn-primary btn-sm sortie-btn-icone"
+                                <a class="btn btn-primary btn-sm my-btn-icone"
                                    href="{{ path('sortie_detail', {id: sortie.id}) }}">
                                     <i class="bi bi-eye"></i>
                                     <span>Afficher</span>
                                 </a>
-                                <a class="btn btn-sm btn-warning sortie-btn-icone" href="{{ path('sortie_update', {id: sortie.id}) }}">
+                                <a class="btn btn-sm btn-warning my-btn-icone" href="{{ path('sortie_update', {id: sortie.id}) }}">
                                     <i class="bi bi-pencil"></i>
                                     <span>Modifier</span>
                                 </a>
@@ -53,21 +53,21 @@
                                       action="{{ path('sortie_publication', {id: sortie.id}) }}">
                                     <input type="hidden" name="_token"
                                            value="{{ csrf_token('publication' ~ sortie.id) }}">
-                                    <button class="btn btn-sm btn-success sortie-btn-icone" type="submit">
+                                    <button class="btn btn-sm btn-success my-btn-icone" type="submit">
                                         <i class="bi bi-send"></i>
                                         <span>Publier</span>
                                     </button>
                                 </form>
 
                             {% elseif etat.value in ["publiee", "cloturee"] %}
-                                <a class="btn btn-primary btn-sm sortie-btn-icone"
+                                <a class="btn btn-primary btn-sm my-btn-icone"
                                    href="{{ path('sortie_detail', {id: sortie.id}) }}">
                                     <i class="bi bi-eye"></i>
                                     <span>Afficher</span>
                                 </a>
                                 {% if app.user %}
                                     {% if sortie.organisateur == app.user %}
-                                        <a class="btn btn-sm btn-danger sortie-btn-icone" href="{{ path('sortie_annuler', {id: sortie.id}) }}">
+                                        <a class="btn btn-sm btn-danger my-btn-icone" href="{{ path('sortie_annuler', {id: sortie.id}) }}">
                                             <i class="bi bi-x-circle"></i>
                                             <span>Annuler</span>
                                         </a>
@@ -76,7 +76,7 @@
                                               action="{{ path('sortie_desistement', {id: sortie.id}) }}">
                                             <input type="hidden" name="_token"
                                                    value="{{ csrf_token('desistement' ~ sortie.id) }}">
-                                            <button class="btn btn-sm btn-warning sortie-btn-icone" type="submit">
+                                            <button class="btn btn-sm btn-warning my-btn-icone" type="submit">
                                                 <i class="bi bi-person-dash"></i>
                                                 <span>Se désister</span>
                                             </button>                                        </form>
@@ -85,7 +85,7 @@
                                               action="{{ path('sortie_inscription', {id: sortie.id}) }}">
                                             <input type="hidden" name="_token"
                                                    value="{{ csrf_token('inscription' ~ sortie.id) }}">
-                                            <button class="btn btn-sm btn-success sortie-btn-icone" type="submit">
+                                            <button class="btn btn-sm btn-success my-btn-icone" type="submit">
                                                 <i class="bi bi-person-plus"></i>
                                                 <span>S'inscrire</span>
                                             </button>                                        </form>
@@ -93,7 +93,7 @@
                                 {% endif %}
 
                             {% elseif etat.value in ["en_cours", "terminee", "annulee"] %}
-                                <a class="btn btn-primary btn-sm sortie-btn-icone"
+                                <a class="btn btn-primary btn-sm my-btn-icone"
                                    href="{{ path('sortie_detail', {id: sortie.id}) }}">
                                     <i class="bi bi-eye"></i>
                                     <span>Afficher</span>
