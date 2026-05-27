@@ -2,6 +2,7 @@
 namespace App\Tests\Controller;
 
 use App\Repository\ParticipantRepository;
+use App\Repository\SortieRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class SortieControllerTest extends WebTestCase
@@ -19,8 +20,9 @@ final class SortieControllerTest extends WebTestCase
         $form = $crawler->selectButton('Créer')->form();
 
         $form['sortie[nom]'] = 'Sortie de test';
+
         $form['sortie[dateHeureDebut]'] = '2026-07-01T18:00';
-        $form['sortie[dateLimiteInscription]'] = '2026-06-25';
+        $form['sortie[dateLimiteInscription]'] = '2026-06-25T18:00';
 
         $form['sortie[duree][days]'] = 0;
         $form['sortie[duree][hours]'] = 2;
@@ -43,6 +45,15 @@ final class SortieControllerTest extends WebTestCase
         self::assertSelectorTextContains('h2', 'Sortie de test');
     }
 
+    public function testCreateRedirectsIfNotLogged(): void
+    {
+        $client = static::createClient();
+
+        $client->request('GET', '/sortie/create');
+
+        self::assertResponseRedirects('/login');
+    }
+
     public function testDetailSortie(): void
     {
         $client = static::createClient();
@@ -52,20 +63,27 @@ final class SortieControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
     }
 
-    public function testDeleteSortie(): void
+    public function testDeleteButtonHiddenIfSortieNotCreated(): void
     {
         $client = static::createClient();
+        $container = static::getContainer();
 
-        $participantRepository = static::getContainer()->get(ParticipantRepository::class);
+        $participantRepository = $container->get(ParticipantRepository::class);
+        $sortieRepository = $container->get(SortieRepository::class);
 
         $user = $participantRepository->findOneBy(['email' => 'admin@test.com']);
 
         $client->loginUser($user);
-        $crawler = $client->request('GET', '/sortie/1');
-        self::assertResponseIsSuccessful();
 
-        $form = $crawler->selectButton('Supprimer')->form();
-        $client->submit($form);
-        self::assertResponseRedirects('/sortie/list');
+        $sortie = $sortieRepository->findOneBy([]);
+
+        self::assertNotNull($sortie);
+
+        // la sortie ne doit pas être "Créée"
+        self::assertNotEquals('Créée', $sortie->getEtat()->value);
+        $client->request('GET', '/sortie/' . $sortie->getId());
+
+        // le formulaire delete ne doit pas exister
+        self::assertSelectorNotExists('form[action*="/delete"]');
     }
 }

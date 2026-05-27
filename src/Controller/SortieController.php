@@ -25,6 +25,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class SortieController extends AbstractController
 {
     #[Route('/create', name: 'create')]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function create(Request $request, SortieService $sortieService): Response
     {
 
@@ -42,14 +43,12 @@ final class SortieController extends AbstractController
             try {
 
                 $sortieService->creerSortie($sortie);
-
                 $this->addFlash('success', 'Sortie créée avec succès');
 
                 return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
 
             } catch (\Exception $e) {
 
-//                dd($e->getMessage());
                 $this->addFlash('error', $e->getMessage());
             }
 
