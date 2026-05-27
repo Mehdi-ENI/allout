@@ -1,4 +1,5 @@
 /* global L */
+import { createMap, createMarker, moveMarker, setMapView } from './map-utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -8,19 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const map = L.map('map-sortie').setView([48.8566, 2.3522], 13);
-
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
-
+    const map = createMap('map-sortie', 48.8566, 2.3522)
     let marker = null;
-
     select.addEventListener('change', () => {
 
         const selectedOption = select.options[select.selectedIndex];
-
         const lat = parseFloat(selectedOption.dataset.lat);
         const lng = parseFloat(selectedOption.dataset.lng);
 
@@ -29,15 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const latLng = [lat, lng];
-
-        map.setView(latLng, 13);
+        setMapView(map, lat, lng);
 
         if (marker) {
-            marker.setLatLng(latLng);
+            moveMarker(marker, lat, lng);
         } else {
-            marker = L.marker(latLng).addTo(map);
+            marker = createMarker(map, lat, lng);
         }
     });
-
 });

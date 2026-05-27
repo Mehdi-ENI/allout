@@ -19,5 +19,8 @@ services:
     App\:
         resource: '../src/'
 
+    App\Service\ParticipantService:
+        arguments:
+            $uploadDir: '%profile_image_dir%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

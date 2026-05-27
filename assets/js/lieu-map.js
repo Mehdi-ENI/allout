@@ -1,50 +1,33 @@
+import { createMap, createMarker, moveMarker } from './map-utils.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 
-    const modalElement = document.getElementById('lieuModal');
-
-    if (!modalElement) {
+    const mapElement = document.getElementById('map-create-lieu');
+    if (!mapElement) {
         return;
     }
 
-    let map = null;
+    const map = createMap('map-create-lieu', 48.8566, 2.3522);
     let marker = null;
 
-    modalElement.addEventListener('shown.bs.modal', () => {
+    map.on('click', (e) => {
 
-        // évite de recréer la map plusieurs fois
-        if (map !== null) {
-            map.invalidateSize();
-            return;
+        const latitude = e.latlng.lat;
+        const longitude = e.latlng.lng;
+
+        document.getElementById('lieu_latitude').value = latitude;
+        document.getElementById('lieu_longitude').value = longitude;
+
+        if (marker) {
+            moveMarker(marker, latitude, longitude);
+
+        } else {
+            marker = createMarker(map, latitude, longitude);
         }
-
-        map = L.map('map-create-lieu').setView([48.8566, 2.3522], 13);
-
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; OpenStreetMap'
-        }).addTo(map);
-
-        map.on('click', (e) => {
-
-            const latitude = e.latlng.lat;
-            const longitude = e.latlng.lng;
-
-            // remplit les champs du formulaire
-            document.getElementById('lieu_latitude').value = latitude;
-            document.getElementById('lieu_longitude').value = longitude;
-
-            // déplace le marker si déjà existant
-            if (marker) {
-                marker.setLatLng(e.latlng);
-            } else {
-                marker = L.marker(e.latlng).addTo(map);
-            }
-        });
-
-        // force le recalcul visuel de Leaflet dans une modale Bootstrap
-        setTimeout(() => {
-            map.invalidateSize();
-        }, 200);
     });
 
+    // utile si carte dans modale Bootstrap
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 200);
 });
