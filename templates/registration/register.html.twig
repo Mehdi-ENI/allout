@@ -11,7 +11,12 @@
                     <div class="card-header fw-bold">Créer un participant</div>
                     <div class="card-body">
 
-                        {{ form_errors(registrationForm) }}
+                        {% if registrationForm.vars.errors|length > 0 %}
+                            <div class="alert alert-danger">
+                                {{ form_errors(registrationForm) }}
+                            </div>
+                        {% endif %}
+
                         {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
 
                         <div class="mb-3">
@@ -63,15 +68,17 @@
                                 </div>
                             {% endif %}
                         </div>
+
                         <div class="mb-3">
                             {{ form_label(registrationForm.site, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(registrationForm.site, {'attr': {'class': 'form-control' ~ (registrationForm.email.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
-                            {% if registrationForm.email.vars.errors|length > 0 %}
+                            {{ form_widget(registrationForm.site, {'attr': {'class': 'form-control' ~ (registrationForm.site.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                            {% if registrationForm.site.vars.errors|length > 0 %}
                                 <div class="invalid-feedback d-block">
-                                    {% for error in registrationForm.email.vars.errors %}{{ error.message }}{% endfor %}
+                                    {% for error in registrationForm.site.vars.errors %}{{ error.message }}{% endfor %}
                                 </div>
                             {% endif %}
                         </div>
+
                         <div class="mb-3">
                             {{ form_label(registrationForm.plainPassword.first, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control' ~ (registrationForm.plainPassword.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
@@ -82,9 +89,7 @@
                             {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control' ~ (registrationForm.plainPassword.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
                             {% if registrationForm.plainPassword.vars.errors|length > 0 %}
                                 <div class="invalid-feedback d-block">
-                                    {% for error in registrationForm.plainPassword.vars.errors %}
-                                        {{ error.message }}
-                                    {% endfor %}
+                                    {% for error in registrationForm.plainPassword.vars.errors %}{{ error.message }}{% endfor %}
                                 </div>
                             {% endif %}
                         </div>
