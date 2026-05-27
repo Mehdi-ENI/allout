@@ -41,7 +41,9 @@
                             {{ form_errors(sortieForm.lieu) }}
                         </div>
 
-                        {{ form_row(sortieForm.site) }}
+                        {% if sortieForm.site is defined %}
+                            {{ form_row(sortieForm.site) }}
+                        {% endif %}
 
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ path('sortie_list') }}" class="btn btn-secondary">Retour</a>
