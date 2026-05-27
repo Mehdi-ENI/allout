@@ -65,7 +65,17 @@ final class SortieController extends AbstractController
                          SiteRepository   $siteRepository,
                          Request          $request): Response
     {
-        $sortie = $sortieRepository->findWithFilters($request->query->all());
+        $filters = $request->query->all();
+
+        // 'site' absent = premier chargement, on met le site par défaut
+        // 'site' vide = l'utilisateur a choisi "Tous les sites", on ne touche pas
+        if (!$request->query->has('site') && $this->getUser()) {
+            /** @var Participant $user */
+            $user = $this->getUser();
+            $filters['site'] = $user->getSite()?->getId();
+        }
+
+        $sortie = $sortieRepository->findWithFilters($filters);
         $sites = $siteRepository->findAll();
 
         return $this->render('sortie/list.html.twig', [
@@ -89,9 +99,9 @@ final class SortieController extends AbstractController
     }
 
     #[Route('/{id}/update', name: 'update', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function update(int $id,
-                           Request $request,
-                           SortieService $sortieService,
+    public function update(int                    $id,
+                           Request                $request,
+                           SortieService          $sortieService,
                            EntityManagerInterface $entityManager): Response
     {
         $sortie = $sortieService->getSortieDetail($id);
@@ -215,7 +225,8 @@ final class SortieController extends AbstractController
 
     #[Route('/{id}/delete', name: 'delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function delete(int $id, Request $request, SortieService $sortieService): Response {
+    public function delete(int $id, Request $request, SortieService $sortieService): Response
+    {
 
         if (!$this->isCsrfTokenValid('suppression' . $id, $request->request->get('_token'))) {
             $this->addFlash('error', 'Token invalide.');

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Participant;
 use App\Form\UpdateParticipantType;
 use App\Repository\ParticipantRepository;
+use App\Service\ParticipantService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,50 +55,26 @@ final class ParticipantController extends AbstractController
     #[Route('/{id}/update', name: 'update', methods: ["GET", "POST"])]
     #[IsGranted("IS_AUTHENTICATED_FULLY")]
     public function update(
-        int                    $id,
-        ParticipantRepository  $participantRepository,
-        Request                $request,
-        EntityManagerInterface $entityManager
-    ): Response
-    {
-        $participant = $participantRepository->find($id);
+        int                $id,
+        ParticipantService $participantService,
+        Request            $request
+    ): Response {
+        $participant = $participantService->getParticipant($id);
 
-        if (!$participant) {
-            throw $this->createNotFoundException('Participant not found');
-        }
-
-        $currentUser = $this->getUser();
-        $isOwnProfile = $currentUser->getId() === $participant->getId();
+        $isOwnProfile = $this->getUser()->getId() === $participant->getId();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
 
         $participantForm = $this->createForm(UpdateParticipantType::class, $participant);
         $participantForm->handleRequest($request);
 
         if (($isOwnProfile || $isAdmin) && $participantForm->isSubmitted() && $participantForm->isValid()) {
-
             $imageFile = $participantForm->get('image')->getData();
-            $uploadDir = $this->getParameter('profile_image_dir');
-
-            if ($imageFile) {
-                if ($participant->getImage()) {
-                    $oldFile = $uploadDir . '/' . $participant->getImage();
-                    if (file_exists($oldFile)) {
-                        unlink($oldFile);
-                    }
-                }
-
-                $safeName = preg_replace('/[^a-z0-9]+/i', '-', $participant->getPseudo() ?? $participant->getEmail());
-                $newFileName = $safeName . '-' . uniqid() . '.' . $imageFile->guessExtension();
-                $imageFile->move($uploadDir, $newFileName);
-                $participant->setImage($newFileName);
-            }
-
-            $entityManager->persist($participant);
-            $entityManager->flush();
+            $participantService->updateParticipant($participant, $imageFile);
 
             $this->addFlash('success', $participant->getPrenom() . ' ' . $participant->getNom() . ' was updated !');
             return $this->redirectToRoute('profile_show', ['id' => $participant->getId()]);
         }
+
         return $this->render("participant/update.html.twig", [
             'updateForm'  => $participantForm,
             'participant' => $participant,

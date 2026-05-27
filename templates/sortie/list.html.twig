@@ -1,80 +1,126 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/sortie.css') }}">
+{% endblock %}
+
+
 {% block body %}
     <div class="container">
-        <div class="col">
-
-            <div>Date du jour : {{ 'now' | date('d/m/y') }}</div>
-            <div>Participant :
-                {% if app.user %}
-                {{ app.user.prenom | capitalize }} {{ app.user.nom | slice (0,1) }}.
+        <div class="d-flex justify-content-between align-items-start">
+            <div class="ms-auto text-end">
+                <p class="mb-0 mt-3">Date du jour : {{ 'now' | date('d/m/y') }}</p>
+                <p class="mb-0">Participant :
+                    {% if app.user %}
+                        {{ app.user.prenom | capitalize }} {{ app.user.nom | slice (0,1) }}.
+                    {% else %}
+                        Non connecté
+                    {% endif %}
+                </p>
             </div>
-            {% else %}
-                Non connecté
-            {% endif %}
+        </div>
 
-            <a class="btn btn-primary" href="{{ path('sortie_create') }}">Créer une nouvelle sortie</a>
+        <h2>
+            <span class="d-sm-none">Mes sorties</span>
+            <span class="d-none d-sm-inline">Filtrer les sorties</span>
+        </h2>
 
-            <div>Filtrer les sorties</div>
-
-            <form action="{{ path('sortie_list') }}" method="get">
-
-                <label>Site :
-                    <select name="site" data-turbo-frame="liste-sorties">
-                        <option value="" {{ app.request.query.get('site') is empty ? 'selected' }}>Tous les sites
+        <form class="d-none d-sm-block" action="{{ path('sortie_list') }}" method="get">
+            <div class="row align-items-center mb-3">
+                <div class="col-auto">
+                    <label for="site" class="col-form-label">Site :</label>
+                </div>
+                <div class="col-auto">
+                    <select id="site" class="form-select form-select-sm" name="site"
+                            data-turbo-frame="liste-sorties">
+                        <option value="" {{ app.request.query.get('site') is same as('') and app.request.query.has('site') ? 'selected' }}>
+                            Tous les sites
                         </option>
                         {% for site in sites %}
-                            <option value="{{ site.nom }}" {{ app.request.query.get('site') == site.nom ? 'selected' }}>
+                            <option value="{{ site.id }}" {{ app.request.query.get('site') == site.nom ? 'selected' }}>
                                 {{ site.nom }}
                             </option>
                         {% endfor %}
                     </select>
-                </label>
+                </div>
+                <div class="col-auto ms-auto">
+                    <button class="btn btn-primary d-lg-none" type="submit">
+                        <i class="bi bi-search"></i>
+                        Rechercher
+                    </button>
+                </div>
+            </div>
 
-                <label>Le nom de la sortie contient :
-                    <input type="text" name="nom" value="{{ app.request.query.get('nom') }}">
-                </label>
+            <div class="row ">
+                <div class="col-lg-6 col-6">
+                    <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
+                        <label for="nom" class="col-form-label text-nowrap">Le nom de la sortie contient :</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input id="nom" class="form-control form-control-sm" type="text" name="nom"
+                                   placeholder="Rechercher" value="{{ app.request.query.get('nom') }}">
+                        </div>
+                    </div>
 
-                <label> Entre
-                    <input type="datetime-local" name="date_debut" value="{{ app.request.query.get('date_debut') }}">
-                </label>
+                    <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                        <div class="d-flex align-items-center gap-2 flex-grow-1">
+                            <label for="date-debut" class="col-form-label text-nowrap">Entre</label>
+                            <input id="date-debut" class="form-control form-control-sm flex-grow-1"
+                                   type="datetime-local"
+                                   name="date_debut" value="{{ app.request.query.get('date_debut') }}">
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-grow-1">
+                            <label for="date-fin" class="col-form-label text-nowrap">et</label>
+                            <input id="date-fin" class="form-control form-control-sm flex-grow-1" type="datetime-local"
+                                   name="date_fin" value="{{ app.request.query.get('date_fin') }}">
+                        </div>
+                    </div>
+                </div>
 
-                <label> et
-                    <input type="datetime-local" name="date_fin" value="{{ app.request.query.get('date_fin') }}">
-                </label>
+                <div class="col-lg-4 col-5">
+                    <div class="form-check">
+                        <input id="organisee" class="form-check-input" type="checkbox" name="sorties_organisees"
+                               value="1"
+                            {{ app.request.query.get('sorties_organisees') ? 'checked' }}>
+                        <label for="organisee" class="form-check-label">Sorties dont je suis
+                            l'organisateur/trice</label>
+                    </div>
+                    <div class="form-check">
+                        <input id="inscrit" class="form-check-input" type="checkbox" name="sorties_inscrits" value="1"
+                            {{ app.request.query.get('sorties_inscrits') ? 'checked' }}>
+                        <label for="inscrit" class="form-check-label">Sorties auxquelles je suis inscrit/e</label>
+                    </div>
+                    <div class="form-check">
+                        <input id="non-inscrit" class="form-check-input" type="checkbox" name="sorties_non_inscrits"
+                               value="1"
+                            {{ app.request.query.get('sorties_non_inscrits') ? 'checked' }}>
+                        <label for="non-inscrit" class="form-check-label">Sorties auxquelles je ne suis pas
+                            inscrit/e</label>
+                    </div>
+                    <div class="form-check">
+                        <input id="passee" class="form-check-input" type="checkbox" name="sorties_passees" value="1"
+                            {{ app.request.query.get('sorties_passees') ? 'checked' }}>
+                        <label for="passee" class="form-check-label">Sorties passées</label>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-1">
+                    <button class="btn btn-primary d-none d-lg-block" type="submit">
+                        <i class="bi bi-search"></i>
+                        Rechercher
+                    </button>
+                </div>
+            </div>
+        </form>
 
-                <label>
-                    <input type="checkbox" name="sorties_organisees" value="1"
-                        {{ app.request.query.get('sorties_organisees') ? 'checked' }}>
-                    Sorties dont je suis l'organisateur/trice
-                </label>
+        <turbo-frame id="liste-sorties">
+            {% include 'sortie/_list.html.twig' %}
+        </turbo-frame>
 
-                <label>
-                    <input type="checkbox" name="sorties_inscrits" value="1"
-                        {{ app.request.query.get('sorties_inscrits') ? 'checked' }}>
-                    Sorties auxquelles je suis inscrit/e
-                </label>
-
-                <label>
-                    <input type="checkbox" name="sorties_non_inscrits" value="1"
-                        {{ app.request.query.get('sorties_non_inscrits') ? 'checked' }}>
-                    Sorties auxquelles je ne suis pas inscrit/e
-                </label>
-
-                <label>
-                    <input type="checkbox" name="sorties_passees" value="1"
-                        {{ app.request.query.get('sorties_passees') ? 'checked' }}>
-                    Sorties passées
-                </label>
-
-                <button type="submit">Rechercher</button>
-            </form>
-        </div>
-        <div class="col">
-            <turbo-frame id="liste-sorties">
-                {% include 'sortie/_list.html.twig' %}
-            </turbo-frame>
-        </div>
+        <a class="d-none d-sm-inline-block mt-3 mb-3 btn btn-primary" href="{{ path('sortie_create') }}">
+            <i class="bi bi-plus-circle"></i>
+            <span>Créer une nouvelle sortie</span>
+        </a>
     </div>
 {% endblock %}
 
