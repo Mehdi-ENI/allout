@@ -7,9 +7,11 @@ use App\Entity\Participant;
 use App\Entity\Site;
 use App\Entity\Sortie;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateIntervalType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -18,6 +20,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SortieType extends AbstractType
 {
+
+    public function __construct(
+        private readonly Security $security
+    ) {
+    }
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -70,15 +77,21 @@ class SortieType extends AbstractType
                 },
                 'placeholder' => 'Choisir un lieu',
                 'label' => 'Lieu',
-            ])
+            ]);
+        /**
+         * Seul un administrateur peut choisir le site.
+         * Pour les autres utilisateurs, le site est défini automatiquement
+         * dans le controller à partir du profil connecté.
+         */
+        if ($this->security->isGranted('ROLE_ADMIN')) {
 
-            ->add('site', EntityType::class, [
+            $builder->add('site', EntityType::class, [
                 'class' => Site::class,
                 'choice_label' => 'nom',
                 'placeholder' => 'Choisir un site',
-                'label' => 'Site',
-            ])
-        ;
+            ]);
+        }
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void

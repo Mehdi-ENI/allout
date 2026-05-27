@@ -74,10 +74,16 @@ final class SortieController extends AbstractController
 
         $sortieForm->handleRequest($request);
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
-            $sortie->setOrganisateur($this->getUser());
+            /** @var Participant $user */
+            $user = $this->getUser();
+
+            $sortie->setOrganisateur($user);
+
+            if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+                $sortie->setSite($user->getSite());
+            }
 
             try {
-
                 $sortieService->creerSortie($sortie);
                 $this->addFlash('success', 'Sortie créée avec succès');
 
