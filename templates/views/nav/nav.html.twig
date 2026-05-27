@@ -28,7 +28,6 @@
                         </li>
                     {% endif %}
 
-                    {# Liens communs à tous les utilisateurs connectés #}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('sortie_list') }}">Accueil</a>
                     </li>
@@ -38,6 +37,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_logout') }}">Se déconnecter</a>
                     </li>
+                    {% else %}
+                        {# Pour les invités : bouton de connexion #}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_login') }}">Se connecter</a>
+                        </li>
 
                 {% endif %}
             </ul>
