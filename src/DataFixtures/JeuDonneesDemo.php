@@ -21,7 +21,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
  *  4. Participants (dépend de Site)
  *  5. Sorties     (dépend de Lieu, Site, Participant)
  */
-class AppFixtures extends Fixture
+class JeuDonneesDemo extends Fixture
 {
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher
