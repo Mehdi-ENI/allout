@@ -1,66 +1,35 @@
+import { createMap, createMarker, moveMarker } from './map-utils.js';
+
 document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('lieuModal');
 
-    const lieuForm = document.getElementById('lieu-form');
+    if (!modal) return;
 
-    if (!lieuForm) {
-        return;
-    }
+    let map;
+    let marker;
 
-    lieuForm.addEventListener('submit', async (e) => {
+    modal.addEventListener('shown.bs.modal', () => {
 
-        e.preventDefault();
+        const mapElement = document.getElementById('map-create-lieu');
+        if (!mapElement || map) return;
 
-        const formData = new FormData(lieuForm);
+        // Paris par défaut
+        map = createMap('map-create-lieu', 48.8566, 2.3522, 12);
+        marker = createMarker(map, 48.8566, 2.3522, "Choisissez un lieu");
 
-        const response = await fetch(
-            lieuForm.action,
-            {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
+        map.on('click', (e) => {
+            const { lat, lng } = e.latlng;
+
+            moveMarker(marker, lat, lng);
+
+            // champs du form Symfony
+            const latInput = document.querySelector('[name$="[latitude]"]');
+            const lngInput = document.querySelector('[name$="[longitude]"]');
+
+            if (latInput && lngInput) {
+                latInput.value = lat;
+                lngInput.value = lng;
             }
-        );
-
-        const contentType = response.headers.get('content-type');
-
-        // CAS ERREUR : Symfony renvoie du HTML
-        if (!contentType || !contentType.includes('application/json')) {
-
-            const html = await response.text();
-
-            console.log(html);
-
-            alert('Le formulaire lieu contient des erreurs.');
-
-            return;
-        }
-
-        // CAS OK : JSON
-        const result = await response.json();
-
-        console.log(result);
-
-        const select = document.getElementById('sortie_lieu');
-
-        const option = new Option(
-            result.nom,
-            result.id,
-            true,
-            true
-        );
-
-        select.add(option);
-
-        const modalElement = document.getElementById('lieuModal');
-
-        const modal = bootstrap.Modal.getInstance(modalElement);
-
-        modal.hide();
-
-        lieuForm.reset();
-
+        });
     });
-
 });
