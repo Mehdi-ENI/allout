@@ -6,6 +6,7 @@ use App\DTO\AnnulationDTO;
 use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Enum\Etat;
 use App\Form\AnnulationDTOType;
 use App\Form\LieuType;
 use App\Form\SortieType;
@@ -81,6 +82,17 @@ final class SortieController extends AbstractController
 
             if (!in_array('ROLE_ADMIN', $user->getRoles())) {
                 $sortie->setSite($user->getSite());
+            }
+
+            /**
+             * Action choisie par l'utilisateur :
+             * - save => création simple
+             * - publish => création + publication immédiate
+             */
+            $action = $request->request->get('action');
+
+            if ($action === 'publish') {
+                $sortie->setActive(true);
             }
 
             try {
@@ -208,16 +220,61 @@ final class SortieController extends AbstractController
         $sortie = $sortieService->getSortieDetail($id);
         $etat = $sortieStateResolver->resolve($sortie);
 
+        if ($etat !== Etat::Creee) {
+            $this->addFlash('error', 'Seules les sorties en état "Créée" peuvent être modifiées.');
+            return $this->redirectToRoute('sortie_list');
+        }
+
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Participant $user */
             $user = $this->getUser();
 
+            /*
+             * Recalculer l'etat de la sortie pour s'assurer que les règles métier sont respectées
+             * (ex : une sortie qui serait passée en "Clôturée" entre le chargement du formulaire et la validation ne pourrait pas être modifiée).
+             * */
+            $etat = $sortieStateResolver->resolve($sortie);
+
+            if ($etat !== Etat::Creee) {
+                $this->addFlash('error', 'La sortie ne peut plus être modifiée.');
+                return $this->redirectToRoute('sortie_list');
+            }
+
+            /**
+             * Action choisie dans le formulaire.
+             */
+            $action = $request->request->get('action');
+
             try {
+                /**
+                 * Les participants classiques restent liés à leur site.
+                 */
                 if (!in_array('ROLE_ADMIN', $user->getRoles())) {
                     $sortie->setSite($user->getSite());
                 }
+
+                /**
+                 * Publication immédiate de la sortie.
+                 */
+                if ($action === 'publish') {
+                    $sortie->setActive(true);
+                }
+
+                /**
+                 * Suppression de la sortie.
+                 */
+                if ($action === 'delete') {
+
+                    $sortieService->delete($sortie, $user);
+                    $this->addFlash('success', 'Sortie supprimée.');
+                    return $this->redirectToRoute('sortie_list');
+                }
+
+                /**
+                 * Sauvegarde des modifications.
+                 */
                 $entityManager->flush();
                 $this->addFlash('success', 'Sortie mise à jour avec succès');
                 return $this->redirectToRoute('sortie_detail', ['id' => $sortie->getId()]);
