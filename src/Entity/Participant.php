@@ -58,7 +58,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         maxMessage: 'Le numéro de téléphone ne peut pas dépasser {{ limit }} caractères.'
     )]
     #[Assert\Regex(
-        pattern: '/^(\+?\d{1,3}[\s\-]?)?(\(?\d{1,4}\)?[\s\-]?)?[\d\s\-]{6,10}$/',
+        pattern: '/^(?:(?:\+|00)33[\s\-]?|0)[1-9](?:[\s\-]?\d{2}){4}$/',
         message: 'Le numéro de téléphone n\'est pas valide.'
     )]
     private ?string $telephone = null;
@@ -119,7 +119,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(?string $email): static
     {
         $this->email = $email;
 

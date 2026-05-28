@@ -29,7 +29,7 @@ final class ProfileController extends AbstractController
      *
      * @param Request                     $request            La requête HTTP courante
      * @param UserPasswordHasherInterface $passwordHasher     Le service Symfony qui hash les mots de passe
-     * @param ParticipantService          $participantService  Le service gérant la logique métier
+     * @param ParticipantService          $participantService Le service gérant la logique métier
      */
     #[Route('', name: 'show')]
     public function show(
@@ -70,7 +70,7 @@ final class ProfileController extends AbstractController
         return $this->render('profile/show.html.twig', [
             'participant'   => $participant,
             'passwordForm'  => $passwordForm,
-            'formSubmitted' => $passwordForm->isSubmitted(),
+            'formSubmitted' => $passwordForm->isSubmitted() && !$passwordForm->isValid(),
         ]);
     }
 }
