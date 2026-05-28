@@ -69,7 +69,7 @@
                         }) }}
                     </td>
                     <td class="text-nowrap">
-                        <button type="submit" form="form-ajout" class="btn btn-primary btn-sm my-btn-icone">
+                        <button type="submit" form="form-ajout" class="btn btn-success btn-sm my-btn-icone">
                             <i class="bi bi-plus-circle"></i> <span>Ajouter</span>
                         </button>
                     </td>
@@ -77,7 +77,8 @@
 
                 {% for ville in villes %}
                     <tr id="ligne-{{ ville.id }}">
-                        <td>
+                        <td data-bs-toggle="tooltip" title="{{ ville.nom }}" class="text-truncate"
+                            style="max-width: 150px;">
                             <span class="nom-texte">{{ ville.nom }}</span>
                             <span class="champ-edition" style="display:none;">
                                 {{ form_widget(formsEdit[ville.id].nom, {

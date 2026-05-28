@@ -8,9 +8,12 @@
 
     <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-warning"><h2 class="mb-0">Modifier une sortie</h2></div>
+            <div class="col-10">
+                <div class="card shadow">
+
+                    <div class="card-header bg-warning">
+                        <h2 class="mb-0">Modifier une sortie</h2>
+                    </div>
 
                     <div class="card-body">
                         {{ form_start(sortieForm) }}
@@ -20,35 +23,111 @@
                             <div class="col-md-6">{{ form_row(sortieForm.dateLimiteInscription) }}</div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6">{{ form_row(sortieForm.duree) }}</div>
+                        <div class="row align-items-end">
                             <div class="col-md-6">{{ form_row(sortieForm.nbInscriptionsMax) }}</div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(sortieForm.duree) }}
+                                    <div class="d-flex align-items-center gap-2 flex-wrap w-100">
+                                        <div class="d-flex align-items-center gap-1 flex-grow-1">
+                                            {{ form_widget(sortieForm.duree.days, {'attr': {'class': 'form-select flex-grow-1', 'style': 'min-width: 0'}}) }}
+                                            <span class="text-muted small flex-shrink-0">j</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1 flex-grow-1">
+                                            {{ form_widget(sortieForm.duree.hours, {'attr': {'class': 'form-select flex-grow-1', 'style': 'min-width: 0'}}) }}
+                                            <span class="text-muted small flex-shrink-0">h</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1 flex-grow-1">
+                                            {{ form_widget(sortieForm.duree.minutes, {'attr': {'class': 'form-select flex-grow-1', 'style': 'min-width: 0'}}) }}
+                                            <span class="text-muted small flex-shrink-0">min</span>
+                                        </div>
+                                    </div>
+                                    {{ form_errors(sortieForm.duree) }}
+                                </div>
+                            </div>
                         </div>
 
                         {{ form_row(sortieForm.infosSortie) }}
 
-                        <div class="row">
-                            <div class="col-md-6">{{ form_row(sortieForm.lieu) }}</div>
-                            <div class="col-md-6">
-                                {% if sortieForm.site is defined %}
-                                    {{ form_row(sortieForm.site) }}
-                                {% endif %}
+                        <div class="mb-3">
+                            {{ form_label(sortieForm.lieu) }}
+
+                            <div class="d-flex gap-2">
+                                {{ form_widget(sortieForm.lieu, {'attr': {'class': 'form-select'}}) }}
+                                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
+                                        data-bs-target="#lieuModal">+
+                                </button>
                             </div>
+
+                            {{ form_errors(sortieForm.lieu) }}
                         </div>
 
+                        {% if sortieForm.site is defined %}
+                            <div class="mb-3">
+                                {{ form_label(sortieForm.site, 'Site (obligatoire)', {'label_attr': {'class': 'form-label'}}) }}
+                                <div class="d-flex gap-2">
+                                    {{ form_widget(sortieForm.site, {'attr': {'class': 'form-select'}}) }}
+                                </div>
+                                {{ form_errors(sortieForm.site) }}
+                            </div>
+                        {% endif %}
+
                         <div class="d-flex justify-content-end gap-2 mt-4">
-                            <a href="{{ path('sortie_list') }}" class="btn btn-outline-secondary">Retour</a>
-                            <button type="submit" class="btn btn-warning">Modifier</button>
+                            <a href="{{ path('sortie_list') }}" class="btn btn-secondary my-btn-icone">
+                                <i class="bi bi-arrow-left-square"></i> <span>Annuler</span>
+                            </a>
+                            <button type="submit" class="btn btn-warning my-btn-icone">
+                                <i class="bi bi-pencil"></i> <span>Modifier</span>
+                            </button>
                         </div>
 
                         {{ form_end(sortieForm) }}
+
+                        <!-- Modale pour ajouter un lieu -->
+                        <div class="modal fade" id="lieuModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-success text-white">
+                                        <h5 class="modal-title">Ajouter un lieu</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+
+                                    {{ form_start(lieuForm, {
+                                        'action': path('app_lieu_new'),
+                                        'attr': {'id': 'lieu-form'}
+                                    }) }}
+
+                                    <div class="modal-body">
+                                        {{ form_widget(lieuForm) }}
+
+                                        <div class="mt-3">
+                                            <label class="form-label">Choisir sur la carte</label>
+                                            <div id="map-create-lieu" style="height: 500px; border-radius: 10px;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary my-btn-icone"
+                                                data-bs-dismiss="modal">
+                                            <i class="bi bi-arrow-left-square"></i> <span>Annuler</span>
+                                        </button>
+                                        <button type="submit" class="btn btn-success my-btn-icone">
+                                            <i class="bi bi-plus-circle"></i> <span>Enregistrer</span>
+                                        </button>
+                                    </div>
+
+
+                                    {{ form_end(lieuForm) }}
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="mb-3">
                             <strong>Localisation :</strong>
 
                             <div
                                 id="map-sortie"
-                                style="height: 400px; border-radius: 10px;"
+                                style="height: 500px; border-radius: 10px;"
                             ></div>
                         </div>
                     </div>
@@ -57,4 +136,9 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/lieu-modal.js') }}"></script>
 {% endblock %}
