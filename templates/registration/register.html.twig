@@ -3,14 +3,14 @@
 {% block title %}Créer un participant{% endblock %}
 
 {% block body %}
-    <div class="container py-4">
+    <div class="container mt-4">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-
-                <div class="card">
-                    <div class="card-header fw-bold">Créer un participant</div>
+            <div class="col-11">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h2 class="mb-0">Ajouter un participant</h2>
+                    </div>
                     <div class="card-body">
-
                         {% if registrationForm.vars.errors|length > 0 %}
                             <div class="alert alert-danger">
                                 {{ form_errors(registrationForm) }}
@@ -114,9 +114,14 @@
                                 </div>
                             {% endif %}
                         </div>
-
-                        <button type="submit" class="btn btn-success w-100">Créer le participant</button>
-                        <a class="btn btn-secondary w-100 my-2" href="{{ path('participant_list') }}">Retour</a>
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <a href="{{ path('participant_list') }}" class="btn btn-secondary my-btn-icone">
+                                <i class="bi bi-arrow-left-square"></i> <span>Annuler</span>
+                            </a>
+                            <button type="submit" class="btn btn-success my-btn-icone">
+                                <i class="bi bi-plus-circle"></i> <span>Enregistrer</span>
+                            </button>
+                        </div>
 
                         {{ form_end(registrationForm) }}
 
