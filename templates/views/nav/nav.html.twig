@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg bg-dark sticky-top" data-bs-theme="dark">
     <div class="container-fluid">
         {# Logo : toujours visible, cliquable vers l'accueil (ou login si invité) #}
-        <a class="navbar-brand" href="{{ app.user ? path('sortie_list') : path('app_login') }}">
+        <a class="navbar-brand" href="{{ path('sortie_list') }}">
             <img src="{{ asset('images/logo.svg') }}"
                  alt="Sortir.com"
                  height="50">
@@ -14,15 +14,6 @@
 
         <div class="collapse navbar-collapse" id="navbarMain">
 
-            {# Liens à gauche — Participants (admin uniquement) #}
-            {% if is_granted('ROLE_ADMIN') %}
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('participant_list') }}">Participants</a>
-                    </li>
-                </ul>
-            {% endif %}
-
             {# Liens à droite — visibles uniquement pour les utilisateurs connectés #}
             <ul class="navbar-nav ms-auto align-items-center">
                 {% if app.user %}
@@ -30,13 +21,16 @@
                     {# Liens admin (Villes + Sites + Lieux) — uniquement pour ROLE_ADMIN #}
                     {% if is_granted('ROLE_ADMIN') %}
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ path('participant_list') }}">Participants</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_site_index') }}">Sites</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ path('app_ville_index') }}">Villes</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('app_lieu_index') }}">Lieux</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_site_index') }}">Sites</a>
                         </li>
                     {% endif %}
 
