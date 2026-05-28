@@ -28,21 +28,29 @@
                         </div>
 
                         {{ form_row(sortieForm.infosSortie) }}
-{#                        {{ form_row(sortieForm.lieu) }}   ---  remplacé par le formulaire de lieu avec un button de ajout s'il n'existe pas#}
+                        {#                        {{ form_row(sortieForm.lieu) }}   ---  remplacé par le formulaire de lieu avec un button de ajout s'il n'existe pas #}
 
                         <div class="mb-3">
                             {{ form_label(sortieForm.lieu) }}
 
                             <div class="d-flex gap-2">
                                 {{ form_widget(sortieForm.lieu, {'attr': {'class': 'form-select'}}) }}
-                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#lieuModal">+</button>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                        data-bs-target="#lieuModal">+
+                                </button>
                             </div>
 
                             {{ form_errors(sortieForm.lieu) }}
                         </div>
 
                         {% if sortieForm.site is defined %}
-                            {{ form_row(sortieForm.site) }}
+                            <div class="mb-3">
+                                {{ form_label(sortieForm.site, 'Site (obligatoire)', {'label_attr': {'class': 'form-label'}}) }}
+                                <div class="d-flex gap-2">
+                                    {{ form_widget(sortieForm.site, {'attr': {'class': 'form-select'}}) }}
+                                </div>
+                                {{ form_errors(sortieForm.site) }}
+                            </div>
                         {% endif %}
 
                         <div class="d-flex justify-content-end gap-2">
@@ -58,14 +66,14 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title">Ajouter un lieu</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                     </div>
 
                                     {{ form_start(lieuForm, {
                                         'action': path('app_lieu_new'),
                                         'attr': {'id': 'lieu-form'}
-                                    })
-                                    }}
+                                    }) }}
 
                                     <div class="modal-body">
                                         {{ form_widget(lieuForm) }}
@@ -76,7 +84,9 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            Annuler
+                                        </button>
                                         <button type="submit" class="btn btn-primary">Enregistrer</button>
                                     </div>
 

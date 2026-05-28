@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Contrôleur de gestion des sites.
@@ -19,6 +20,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * directement depuis une interface inline sans pages séparées.
  */
 #[Route('/site')]
+#[IsGranted('ROLE_ADMIN')]
 final class SiteController extends AbstractController
 {
     /**

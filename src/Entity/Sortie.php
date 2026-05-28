@@ -88,6 +88,7 @@ class Sortie
     /**
      * Nombre maximum de participants autorisés.
      */
+    #[Assert\NotNull(message: "La nombre de participants autorisés est obligatoire.")]
     #[ORM\Column]
     private ?int $nbInscriptionsMax = null;
 
@@ -125,10 +126,11 @@ class Sortie
     #[ORM\ManyToOne(inversedBy: 'sortiesOrganisees')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Participant $organisateur = null;
-
     /**
      * Lieu associé à la sortie.
      */
+
+    #[Assert\NotNull(message: "La lieu est obligatoire.")]
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Lieu $lieu = null;
@@ -206,7 +208,7 @@ class Sortie
     /**
      * Définit la date de début.
      */
-    public function setDateHeureDebut(\DateTime $dateHeureDebut): static
+    public function setDateHeureDebut(?\DateTime $dateHeureDebut): static
     {
         $this->dateHeureDebut = $dateHeureDebut;
 
@@ -242,7 +244,7 @@ class Sortie
     /**
      * Définit la date limite d'inscription.
      */
-    public function setDateLimiteInscription(\DateTime $dateLimiteInscription): static
+    public function setDateLimiteInscription(?\DateTime $dateLimiteInscription): static
     {
         $this->dateLimiteInscription = $dateLimiteInscription;
 

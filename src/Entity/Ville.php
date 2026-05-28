@@ -49,7 +49,7 @@ class Ville
         return $this->nom;
     }
 
-    public function setNom(string $nom): static
+    public function setNom(?string $nom): static
     {
         $this->nom = $nom;
 
@@ -61,7 +61,7 @@ class Ville
         return $this->codePostal;
     }
 
-    public function setCodePostal(string $codePostal): static
+    public function setCodePostal(?string $codePostal): static
     {
         $this->codePostal = $codePostal;
 
