@@ -79,14 +79,25 @@
                             {% endif %}
                         </div>
 
+                        {# Mot de passe — les erreurs de contraintes remontent sur first.vars.errors #}
                         <div class="mb-3">
                             {{ form_label(registrationForm.plainPassword.first, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control' ~ (registrationForm.plainPassword.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                            {{ form_widget(registrationForm.plainPassword.first, {'attr': {
+                                'class': 'form-control' ~ (registrationForm.plainPassword.first.vars.errors|length > 0 ? ' is-invalid' : '')
+                            }}) }}
+                            {% if registrationForm.plainPassword.first.vars.errors|length > 0 %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in registrationForm.plainPassword.first.vars.errors %}{{ error.message }}{% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
 
+                        {# Confirmation — l'erreur de non-correspondance remonte sur le parent plainPassword #}
                         <div class="mb-3">
                             {{ form_label(registrationForm.plainPassword.second, 'Confirmer le mot de passe', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control' ~ (registrationForm.plainPassword.vars.errors|length > 0 ? ' is-invalid' : '')}}) }}
+                            {{ form_widget(registrationForm.plainPassword.second, {'attr': {
+                                'class': 'form-control' ~ (registrationForm.plainPassword.vars.errors|length > 0 ? ' is-invalid' : '')
+                            }}) }}
                             {% if registrationForm.plainPassword.vars.errors|length > 0 %}
                                 <div class="invalid-feedback d-block">
                                     {% for error in registrationForm.plainPassword.vars.errors %}{{ error.message }}{% endfor %}
