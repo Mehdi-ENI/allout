@@ -79,7 +79,7 @@
                             <button type="submit" name="action" value="save" class="btn btn-success my-btn-icone">
                                 <i class="bi bi-plus-circle"></i> <span>Créer</span>
                             </button>
-                            <button type="submit" name="action" value="publish" class="btn btn-success">
+                            <button type="submit" name="action" value="publish" class="btn btn-success my-btn-icone">
                                 <i class="bi bi-send"></i> <span>Publier</span>
                             </button>
 
@@ -140,9 +140,4 @@
         </div>
     </div>
 
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="{{ asset('js/lieu-modal.js') }}"></script>
 {% endblock %}
