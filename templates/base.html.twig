@@ -17,8 +17,9 @@
     {% endblock %}
 
 </head>
-<body>
+<main class="d-flex flex-column min-vh-100">
 {% include 'views/nav/nav.html.twig' %}
+<main class="flex-grow-1"
 
 {% for message in app.flashes('error') %}
     <div class="alert alert-danger">{{ message }}</div>
@@ -28,7 +29,10 @@
 {% endfor %}
 
 {% block body %}{% endblock %}
-{% include 'views/footer/footer.html.twig' %}
+</main>
+    {% block footer %}
+        {% include 'views/footer/footer.html.twig' %}
+    {% endblock %}
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>
 </html>
