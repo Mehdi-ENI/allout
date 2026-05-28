@@ -8,6 +8,7 @@ use App\Entity\Site;
 use App\Entity\Sortie;
 use App\Entity\Ville;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -21,11 +22,16 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
  *  4. Participants (dépend de Site)
  *  5. Sorties     (dépend de Lieu, Site, Participant)
  */
-class JeuDonneesDemo extends Fixture
+class JeuDonneesDemo extends Fixture implements FixtureGroupInterface
 {
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher
     ) {}
+
+    public static function getGroups(): array
+    {
+        return ['demo'];
+    }
 
     public function load(ObjectManager $manager): void
     {
@@ -188,7 +194,7 @@ class JeuDonneesDemo extends Fixture
         $desactive->setTelephone('0600000002');
         $desactive->setSite($siteRennes);
         $desactive->setRoles(['ROLE_USER']);
-        $desactive->setActif(false); // compte bloqué
+        $desactive->setActif(false);
         $desactive->setPassword(
             $this->passwordHasher->hashPassword($desactive, $plainPassword)
         );
@@ -330,7 +336,6 @@ class JeuDonneesDemo extends Fixture
         $now = new \DateTime();
 
         // --- 1. CRÉÉE (brouillon, non publiée) ---
-        // Alice a commencé à créer une sortie mais ne l'a pas encore publiée.
         $sortieCreee = new Sortie();
         $sortieCreee->setNom('Soirée jeux de société');
         $sortieCreee->setDateHeureDebut((clone $now)->modify('+15 days')->setTime(19, 0));
@@ -338,14 +343,13 @@ class JeuDonneesDemo extends Fixture
         $sortieCreee->setDuree(new \DateInterval('PT3H'));
         $sortieCreee->setNbInscriptionsMax(10);
         $sortieCreee->setInfosSortie('Apportez vos jeux préférés ! Boissons et snacks fournis.');
-        $sortieCreee->setActive(false); // brouillon
+        $sortieCreee->setActive(false);
         $sortieCreee->setAnnulee(false);
         $sortieCreee->setOrganisateur($alice);
         $sortieCreee->setLieu($lieuPinterie);
         $sortieCreee->setSite($siteRennes);
 
         // --- 2. PUBLIÉE (inscriptions ouvertes) ---
-        // Bob organise une rando, inscriptions encore ouvertes.
         $sortiePubliee = new Sortie();
         $sortiePubliee->setNom('Randonnée en forêt de Brocéliande');
         $sortiePubliee->setDateHeureDebut((clone $now)->modify('+20 days')->setTime(9, 0));
@@ -358,13 +362,11 @@ class JeuDonneesDemo extends Fixture
         $sortiePubliee->setOrganisateur($bob);
         $sortiePubliee->setLieu($lieuParcRennes);
         $sortiePubliee->setSite($siteRennes);
-        // Quelques inscrits pour montrer la liste des participants
         $sortiePubliee->addParticipant($alice);
         $sortiePubliee->addParticipant($chloe);
         $sortiePubliee->addParticipant($david);
 
         // --- 3. CLÔTURÉE (date limite dépassée, sortie pas encore commencée) ---
-        // David organise un bowling, les inscriptions sont fermées.
         $sortieCloturee = new Sortie();
         $sortieCloturee->setNom('Soirée bowling inter-sites');
         $sortieCloturee->setDateHeureDebut((clone $now)->modify('+3 days')->setTime(20, 0));
@@ -382,8 +384,7 @@ class JeuDonneesDemo extends Fixture
         $sortieCloturee->addParticipant($francois);
         $sortieCloturee->addParticipant($gaelle);
 
-        // --- 4. EN COURS (sortie démarrée, pas encore terminée) ---
-        // Emma organise une visite au Jardin des Plantes commencée il y a 1h.
+        // --- 4. EN COURS (commencée il y a 1h, durée 4h) ---
         $sortieEnCours = new Sortie();
         $sortieEnCours->setNom('Visite Jardin des Plantes Nantes');
         $sortieEnCours->setDateHeureDebut((clone $now)->modify('-1 hour'));
@@ -399,8 +400,7 @@ class JeuDonneesDemo extends Fixture
         $sortieEnCours->addParticipant($david);
         $sortieEnCours->addParticipant($alice);
 
-        // --- 5. TERMINÉE (finie il y a 5 jours, pas encore archivée) ---
-        // François a organisé une soirée à Paris la semaine dernière.
+        // --- 5. TERMINÉE (finie il y a 5 jours, < 30j) ---
         $sortieTerminee = new Sortie();
         $sortieTerminee->setNom('Afterwork Le Marais');
         $sortieTerminee->setDateHeureDebut((clone $now)->modify('-5 days')->setTime(18, 0));
@@ -416,8 +416,7 @@ class JeuDonneesDemo extends Fixture
         $sortieTerminee->addParticipant($gaelle);
         $sortieTerminee->addParticipant($hugo);
 
-        // --- 6. ARCHIVÉE (terminée il y a plus de 30 jours) ---
-        // Gaëlle avait organisé une visite à Océanopolis il y a 2 mois.
+        // --- 6. ARCHIVÉE (terminée il y a 60 jours, > 30j) ---
         $sortieArchivee = new Sortie();
         $sortieArchivee->setNom('Visite Océanopolis Brest');
         $sortieArchivee->setDateHeureDebut((clone $now)->modify('-60 days')->setTime(10, 0));
@@ -435,7 +434,6 @@ class JeuDonneesDemo extends Fixture
         $sortieArchivee->addParticipant($emma);
 
         // --- 7. ANNULÉE ---
-        // Hugo avait prévu une sortie à Lyon mais l'a annulée (météo).
         $sortieAnnulee = new Sortie();
         $sortieAnnulee->setNom('Pique-nique Parc de la Tête d\'Or');
         $sortieAnnulee->setDateHeureDebut((clone $now)->modify('+7 days')->setTime(12, 0));
@@ -452,14 +450,13 @@ class JeuDonneesDemo extends Fixture
         $sortieAnnulee->addParticipant($francois);
         $sortieAnnulee->addParticipant($gaelle);
 
-        // --- 8. PUBLIÉE complète (pour tester le refus d'inscription) ---
-        // Chloé organise une sortie restaurant avec max 3 places, déjà pleine.
+        // --- 8. PUBLIÉE COMPLÈTE (nbMax=3 déjà atteint) ---
         $sortieComplete = new Sortie();
         $sortieComplete->setNom('Dîner La Cigale Nantes');
         $sortieComplete->setDateHeureDebut((clone $now)->modify('+25 days')->setTime(20, 0));
         $sortieComplete->setDateLimiteInscription((clone $now)->modify('+18 days')->setTime(23, 59));
         $sortieComplete->setDuree(new \DateInterval('PT2H30M'));
-        $sortieComplete->setNbInscriptionsMax(3); // volontairement petit pour tester sortie complète
+        $sortieComplete->setNbInscriptionsMax(3);
         $sortieComplete->setInfosSortie('Réservation au nom de l\'organisatrice. Menu à 35€ par personne.');
         $sortieComplete->setActive(true);
         $sortieComplete->setAnnulee(false);
@@ -468,7 +465,7 @@ class JeuDonneesDemo extends Fixture
         $sortieComplete->setSite($siteRennes);
         $sortieComplete->addParticipant($alice);
         $sortieComplete->addParticipant($bob);
-        $sortieComplete->addParticipant($david); // 3/3 = complet
+        $sortieComplete->addParticipant($david);
 
         $manager->persist($sortieCreee);
         $manager->persist($sortiePubliee);

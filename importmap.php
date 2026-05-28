@@ -42,4 +42,8 @@ return [
         'version' => '1.9.4',
         'type' => 'css',
     ],
+    'bootstrap-icons/font/bootstrap-icons.css' => [
+        'version' => '1.13.1',
+        'type' => 'css',
+    ],
 ];
