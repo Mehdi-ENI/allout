@@ -1,5 +1,21 @@
 body {
-    background-color: skyblue;
+    background: url('/images/imageIndex.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+body.login-bg {
+    background: url('/images/imageIndex.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+.table > :not(caption) > * > * {
+    background-color: #ffffff !important;
 }
 
 ul, li {
@@ -53,4 +69,5 @@ textarea {
     .my-btn-icone span {
         display: none !important;
     }
+
 }
