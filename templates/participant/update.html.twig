@@ -2,7 +2,7 @@
 {% block body %}
     <h1>Update profile</h1>
     {{ form_errors(updateForm) }}
-    {{ form_start(updateForm) }}
+    {{ form_start(updateForm, {'attr': {'novalidate': 'novalidate'}}) }}
     {{ form_row(updateForm.prenom) }}
     {{ form_row(updateForm.nom) }}
     {{ form_row(updateForm.pseudo) }}

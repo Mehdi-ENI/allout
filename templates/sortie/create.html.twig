@@ -76,9 +76,13 @@
                             <a href="{{ path('sortie_list') }}" class="btn btn-secondary my-btn-icone">
                                 <i class="bi bi-arrow-left-square"></i> <span>Annuler</span>
                             </a>
-                            <button type="submit" class="btn btn-success my-btn-icone">
+                            <button type="submit" name="action" value="save" class="btn btn-success my-btn-icone">
                                 <i class="bi bi-plus-circle"></i> <span>Créer</span>
                             </button>
+                            <button type="submit" name="action" value="publish" class="btn btn-success">
+                                <i class="bi bi-send"></i> <span>Publier</span>
+                            </button>
+
                         </div>
 
                         {{ form_end(sortieForm) }}
