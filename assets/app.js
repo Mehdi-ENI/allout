@@ -10,7 +10,7 @@ window.bootstrap = bootstrap;
 /**
  * Bootstrap Icons
  */
-import '../node_modules/bootstrap-icons/font/bootstrap-icons.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 /**
  * Leaflet
