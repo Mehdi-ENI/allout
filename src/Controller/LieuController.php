@@ -28,7 +28,7 @@ final class LieuController extends AbstractController
      *
      * La liste peut être filtrée par nom via le paramètre GET "recherche".
      *
-     * @param Request        $request        La requête HTTP courante
+     * @param Request $request La requête HTTP courante
      * @param LieuRepository $lieuRepository Le dépôt des lieux
      *
      * @return Response La vue de la liste des lieux
@@ -56,7 +56,7 @@ final class LieuController extends AbstractController
      * - Requête standard : redirige vers la liste avec un flash de succès,
      *   ou affiche le formulaire avec les erreurs de validation.
      *
-     * @param Request                $request       La requête HTTP courante
+     * @param Request $request La requête HTTP courante
      * @param EntityManagerInterface $entityManager Le gestionnaire d'entités Doctrine
      *
      * @return Response|JsonResponse La vue du formulaire, une redirection ou une réponse JSON
@@ -74,14 +74,12 @@ final class LieuController extends AbstractController
             $entityManager->flush();
 
             if ($request->isXmlHttpRequest()) {
-                if ($request->isXmlHttpRequest()) {
-                    return new JsonResponse([
-                        'id'        => $lieu->getId(),
-                        'nom'       => $lieu->getNom(),
-                        'latitude'  => $lieu->getLatitude(),
-                        'longitude' => $lieu->getLongitude(),
-                    ]);
-                }
+                return new JsonResponse([
+                    'id' => $lieu->getId(),
+                    'nom' => $lieu->getNom(),
+                    'latitude' => $lieu->getLatitude(),
+                    'longitude' => $lieu->getLongitude(),
+                ]);
             }
 
             $this->addFlash('success', 'Lieu ajouté avec succès.');
@@ -90,7 +88,7 @@ final class LieuController extends AbstractController
 
         if ($request->isXmlHttpRequest()) {
             return new JsonResponse([
-                'errors' => (string) $form->getErrors(true, false),
+                'errors' => (string)$form->getErrors(true, false),
             ], 422);
         }
 
@@ -107,8 +105,8 @@ final class LieuController extends AbstractController
      * En cas d'erreur de validation affiche le formulaire avec les erreurs
      * sous les champs via Symfony et ajoute les messages en flash.
      *
-     * @param Request                $request       La requête HTTP courante
-     * @param Lieu                   $lieu          Le lieu à modifier (résolu automatiquement par l'id)
+     * @param Request $request La requête HTTP courante
+     * @param Lieu $lieu Le lieu à modifier (résolu automatiquement par l'id)
      * @param EntityManagerInterface $entityManager Le gestionnaire d'entités Doctrine
      *
      * @return Response La vue du formulaire ou une redirection
@@ -144,8 +142,8 @@ final class LieuController extends AbstractController
      * et un message d'erreur générique est affiché à l'utilisateur.
      * Si le token CSRF est invalide, la suppression est annulée immédiatement.
      *
-     * @param Request                $request       La requête HTTP courante
-     * @param Lieu                   $lieu          Le lieu à supprimer (résolu automatiquement par l'id)
+     * @param Request $request La requête HTTP courante
+     * @param Lieu $lieu Le lieu à supprimer (résolu automatiquement par l'id)
      * @param EntityManagerInterface $entityManager Le gestionnaire d'entités Doctrine
      *
      * @return Response Redirection vers la liste des lieux
