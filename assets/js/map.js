@@ -4,7 +4,7 @@ import { createMap, createMarker } from './map-utils.js';
 document.addEventListener('DOMContentLoaded', () => {
 
     const mapElement = document.getElementById('map');
-    if (!mapElement) {return;}
+    if (!mapElement) return;
 
     const latitude = parseFloat(mapElement.dataset.latitude);
     const longitude = parseFloat(mapElement.dataset.longitude);
@@ -19,4 +19,5 @@ document.addEventListener('DOMContentLoaded', () => {
     const marker = createMarker(map, latitude, longitude, lieuNom);
     marker.openPopup();
 
+    setTimeout(() => map.invalidateSize(), 100);
 });

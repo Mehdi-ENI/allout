@@ -20,6 +20,11 @@
             <span class="d-none d-sm-inline">Filtrer les sorties</span>
         </h2>
 
+        <a class="d-none d-sm-inline-block mt-3 mb-3 btn btn-success" href="{{ path('sortie_create') }}">
+            <i class="bi bi-plus-circle"></i>
+            <span>Créer une nouvelle sortie</span>
+        </a>
+
         <form class="d-none d-sm-block" action="{{ path('sortie_list') }}" method="get">
             <div class="row align-items-center mb-3">
                 <div class="col-auto">
@@ -110,11 +115,6 @@
         <turbo-frame id="liste-sorties">
             {% include 'sortie/_list.html.twig' %}
         </turbo-frame>
-
-        <a class="d-none d-sm-inline-block mt-3 mb-3 btn btn-success" href="{{ path('sortie_create') }}">
-            <i class="bi bi-plus-circle"></i>
-            <span>Créer une nouvelle sortie</span>
-        </a>
     </div>
 {% endblock %}
 
