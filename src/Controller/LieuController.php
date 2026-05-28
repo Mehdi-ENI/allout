@@ -74,7 +74,14 @@ final class LieuController extends AbstractController
             $entityManager->flush();
 
             if ($request->isXmlHttpRequest()) {
-                return new JsonResponse(['id' => $lieu->getId(), 'nom' => $lieu->getNom()]);
+                if ($request->isXmlHttpRequest()) {
+                    return new JsonResponse([
+                        'id'        => $lieu->getId(),
+                        'nom'       => $lieu->getNom(),
+                        'latitude'  => $lieu->getLatitude(),
+                        'longitude' => $lieu->getLongitude(),
+                    ]);
+                }
             }
 
             $this->addFlash('success', 'Lieu ajouté avec succès.');

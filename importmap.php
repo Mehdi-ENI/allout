@@ -35,4 +35,11 @@ return [
         'version' => '5.3.8',
         'type' => 'css',
     ],
+    'leaflet' => [
+        'version' => '1.9.4',
+    ],
+    'leaflet/dist/leaflet.min.css' => [
+        'version' => '1.9.4',
+        'type' => 'css',
+    ],
 ];

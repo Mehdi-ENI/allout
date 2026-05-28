@@ -225,6 +225,12 @@ final class SortieController extends AbstractController
             return $this->redirectToRoute('sortie_list');
         }
 
+        /**
+         * Formulaire utilisé dans la modale d'ajout rapide d'un lieu.
+         */
+        $lieu = new Lieu();
+        $lieuForm = $this->createForm(LieuType::class, $lieu);
+
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -285,6 +291,7 @@ final class SortieController extends AbstractController
         }
 
         return $this->render('sortie/update.html.twig', [
+            'lieuForm' => $lieuForm->createView(),
             'sortieForm' => $form,
             'sortie' => $sortie,
             'etat' => $etat,
@@ -327,7 +334,7 @@ final class SortieController extends AbstractController
 
         return $this->render('sortie/annuler.html.twig', [
             'sortie' => $sortie,
-            'form' => $form
+            'form' => $form,
         ]);
     }
 
