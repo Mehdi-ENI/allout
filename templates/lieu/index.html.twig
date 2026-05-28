@@ -26,7 +26,7 @@
                     </button>
                 </div>
                 <div class="col-auto ms-auto">
-                    <a href="{{ path('app_lieu_new') }}" class="btn btn-primary btn-sm my-btn-icone">
+                    <a href="{{ path('app_lieu_new') }}" class="btn btn-success btn-sm my-btn-icone">
                         <i class="bi bi-plus-circle"></i> <span>Ajouter un lieu</span>
                     </a>
                 </div>
@@ -48,11 +48,11 @@
                 <tbody class="table-group-divider">
                 {% for lieu in lieux %}
                     <tr>
-                        <td>{{ lieu.nom }}</td>
-                        <td>{{ lieu.rue }}</td>
+                        <td class="text-truncate" style="max-width: 150px;"><span title="{{ lieu.nom }}" data-bs-toggle="tooltip">{{ lieu.nom }}</span></td>
+                        <td class="text-truncate" style="max-width: 150px;"><span title="{{ lieu.rue }}" data-bs-toggle="tooltip">{{ lieu.rue }}</span></td>
                         <td>{{ lieu.latitude }}</td>
                         <td>{{ lieu.longitude }}</td>
-                        <td>{{ lieu.ville.nom }}</td>
+                        <td class="text-truncate" style="max-width: 150px;"><span title="{{ lieu.ville.nom }}" data-bs-toggle="tooltip">{{ lieu.ville.nom }}</span></td>
                         <td class="text-nowrap">
                             <a href="{{ path('app_lieu_edit', {'id': lieu.id}) }}"
                                class="btn btn-warning btn-sm my-btn-icone">

@@ -5,12 +5,13 @@
 {% endblock %}
 
 {% block body %}
+
     <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card shadow-sm">
+            <div class="col-10">
+                <div class="card shadow">
 
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-success text-white">
                         <h2 class="mb-0">Créer une sortie</h2>
                     </div>
 
@@ -22,20 +23,38 @@
                             <div class="col-md-6">{{ form_row(sortieForm.dateLimiteInscription) }}</div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-4">{{ form_row(sortieForm.duree) }}</div>
-                            <div class="col-md-4">{{ form_row(sortieForm.nbInscriptionsMax) }}</div>
+                        <div class="row align-items-end">
+                            <div class="col-md-6">{{ form_row(sortieForm.nbInscriptionsMax) }}</div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(sortieForm.duree) }}
+                                    <div class="d-flex align-items-center gap-2 flex-wrap w-100">
+                                        <div class="d-flex align-items-center gap-1 flex-grow-1">
+                                            {{ form_widget(sortieForm.duree.days, {'attr': {'class': 'form-select flex-grow-1', 'style': 'min-width: 0'}}) }}
+                                            <span class="text-muted small flex-shrink-0">j</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1 flex-grow-1">
+                                            {{ form_widget(sortieForm.duree.hours, {'attr': {'class': 'form-select flex-grow-1', 'style': 'min-width: 0'}}) }}
+                                            <span class="text-muted small flex-shrink-0">h</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1 flex-grow-1">
+                                            {{ form_widget(sortieForm.duree.minutes, {'attr': {'class': 'form-select flex-grow-1', 'style': 'min-width: 0'}}) }}
+                                            <span class="text-muted small flex-shrink-0">min</span>
+                                        </div>
+                                    </div>
+                                    {{ form_errors(sortieForm.duree) }}
+                                </div>
+                            </div>
                         </div>
 
                         {{ form_row(sortieForm.infosSortie) }}
-                        {#                        {{ form_row(sortieForm.lieu) }}   ---  remplacé par le formulaire de lieu avec un button de ajout s'il n'existe pas #}
 
                         <div class="mb-3">
                             {{ form_label(sortieForm.lieu) }}
 
                             <div class="d-flex gap-2">
                                 {{ form_widget(sortieForm.lieu, {'attr': {'class': 'form-select'}}) }}
-                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
                                         data-bs-target="#lieuModal">+
                                 </button>
                             </div>
@@ -53,19 +72,26 @@
                             </div>
                         {% endif %}
 
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ path('sortie_list') }}" class="btn btn-secondary">Retour</a>
-                            <button type="submit" name="action" value="save" class="btn btn-primary">Créer</button>
-                            <button type="submit" name="action" value="publish" class="btn btn-success">Publier</button>
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="{{ path('sortie_list') }}" class="btn btn-secondary my-btn-icone">
+                                <i class="bi bi-arrow-left-square"></i> <span>Annuler</span>
+                            </a>
+                            <button type="submit" name="action" value="save" class="btn btn-success my-btn-icone">
+                                <i class="bi bi-plus-circle"></i> <span>Créer</span>
+                            </button>
+                            <button type="submit" name="action" value="publish" class="btn btn-success">
+                                <i class="bi bi-send"></i> <span>Publier</span>
+                            </button>
+
                         </div>
 
                         {{ form_end(sortieForm) }}
 
                         <!-- Modale pour ajouter un lieu -->
                         <div class="modal fade" id="lieuModal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog">
+                            <div class="modal-dialog modal-xl">
                                 <div class="modal-content">
-                                    <div class="modal-header">
+                                    <div class="modal-header bg-success text-white">
                                         <h5 class="modal-title">Ajouter un lieu</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
@@ -81,15 +107,19 @@
 
                                         <div class="mt-3">
                                             <label class="form-label">Choisir sur la carte</label>
-                                            <div id="map-create-lieu" style="height: 300px; border-radius: 10px;"></div>
+                                            <div id="map-create-lieu" style="height: 500px; border-radius: 10px;"></div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                            Annuler
+                                        <button type="button" class="btn btn-secondary my-btn-icone"
+                                                data-bs-dismiss="modal">
+                                            <i class="bi bi-arrow-left-square"></i> <span>Annuler</span>
                                         </button>
-                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                        <button type="submit" class="btn btn-success my-btn-icone">
+                                            <i class="bi bi-plus-circle"></i> <span>Enregistrer</span>
+                                        </button>
                                     </div>
+
 
                                     {{ form_end(lieuForm) }}
                                 </div>
@@ -101,7 +131,7 @@
 
                             <div
                                 id="map-sortie"
-                                style="height: 400px; border-radius: 10px;"
+                                style="height: 500px; border-radius: 10px;"
                             ></div>
                         </div>
                     </div>
