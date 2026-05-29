@@ -137,11 +137,6 @@ final class SortieController extends AbstractController
                          Request          $request): Response{
         $filters = $request->query->all();
 
-        /*
-         * Premier chargement :
-         * on applique automatiquement le site
-         * de l'utilisateur connecté.
-         */
         if (!$request->query->has('site') && $this->getUser()) {
             /** @var Participant $user */
             $user = $this->getUser();
@@ -150,10 +145,6 @@ final class SortieController extends AbstractController
 
         $sorties = $sortieRepository->findWithFilters($filters);
 
-        /*
-         * Préparation des données pour Twig.
-         * Chaque sortie est accompagnée de son état calculé.
-         */
         $sortiesAvecEtat = [];
 
         foreach ($sorties as $sortie) {
