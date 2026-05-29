@@ -17,29 +17,34 @@ class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
     #[IsGranted("ROLE_ADMIN")]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, FileUploader $fileUploader,EntityManagerInterface $entityManager): Response
-    {
+    public function register(
+        Request $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        FileUploader $fileUploader,
+        EntityManagerInterface $entityManager
+    ): Response {
         $user = new Participant();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            //réupération de l'image et traitement
-            $file = $form->get('image')->getData();
-            $user->setImage(
-                $fileUploader->upload($file, $this->getParameter('profile_image_dir'), $user->getPseudo())
-            );
+
+            // Hashage du mot de passe
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
-
-            // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+
+            // Upload de l'image si fournie
+            $file = $form->get('image')->getData();
+            if ($file) {
+                $user->setImage(
+                    $fileUploader->upload($file, $this->getParameter('profile_image_dir'), $user->getPseudo())
+                );
+            }
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
-            // Affichage d'un flash message
             $this->addFlash('success', 'Le compte de ' . $user->getPrenom() . ' ' . $user->getNom() . ' a bien été créé !');
             return $this->redirectToRoute('participant_list');
         }
