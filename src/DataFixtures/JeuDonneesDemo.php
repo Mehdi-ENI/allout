@@ -169,11 +169,11 @@ class JeuDonneesDemo extends Fixture implements FixtureGroupInterface
         //  - 8 participants normaux répartis sur les 3 sites
         // =====================================================================
 
-        $plainPassword = 'Password1!';
+        $plainPassword = 'test';
 
         // --- Admin ---
         $admin = new Participant();
-        $admin->setEmail('admin@sortir.com');
+        $admin->setEmail('admin@test.com');
         $admin->setPrenom('Admin');
         $admin->setNom('Admin');
         $admin->setPseudo('admin');
@@ -187,7 +187,7 @@ class JeuDonneesDemo extends Fixture implements FixtureGroupInterface
 
         // --- Participant désactivé ---
         $desactive = new Participant();
-        $desactive->setEmail('desactive@sortir.com');
+        $desactive->setEmail('desactive@test.com');
         $desactive->setPrenom('Jean');
         $desactive->setNom('Désactivé');
         $desactive->setPseudo('jean_off');
@@ -201,10 +201,10 @@ class JeuDonneesDemo extends Fixture implements FixtureGroupInterface
 
         // --- Participants Rennes ---
         $alice = new Participant();
-        $alice->setEmail('alice@sortir.com');
-        $alice->setPrenom('Alice');
-        $alice->setNom('Martin');
-        $alice->setPseudo('alice_m');
+        $alice->setEmail('dd@test.com');
+        $alice->setPrenom('Diana');
+        $alice->setNom('D.');
+        $alice->setPseudo('Didi');
         $alice->setTelephone('0611111111');
         $alice->setSite($siteRennes);
         $alice->setRoles(['ROLE_USER']);
@@ -214,10 +214,10 @@ class JeuDonneesDemo extends Fixture implements FixtureGroupInterface
         );
 
         $bob = new Participant();
-        $bob->setEmail('bob@sortir.com');
-        $bob->setPrenom('Bob');
-        $bob->setNom('Dupont');
-        $bob->setPseudo('bob_d');
+        $bob->setEmail('mr@test.com');
+        $bob->setPrenom('Mehdi');
+        $bob->setNom('R.');
+        $bob->setPseudo('Meme');
         $bob->setTelephone('0622222222');
         $bob->setSite($siteRennes);
         $bob->setRoles(['ROLE_USER']);
@@ -227,10 +227,10 @@ class JeuDonneesDemo extends Fixture implements FixtureGroupInterface
         );
 
         $chloe = new Participant();
-        $chloe->setEmail('chloe@sortir.com');
-        $chloe->setPrenom('Chloé');
-        $chloe->setNom('Bernard');
-        $chloe->setPseudo('chloe_b');
+        $chloe->setEmail('ef@test.com');
+        $chloe->setPrenom('Erwan');
+        $chloe->setNom('F.');
+        $chloe->setPseudo('Erer');
         $chloe->setTelephone('0633333333');
         $chloe->setSite($siteRennes);
         $chloe->setRoles(['ROLE_USER']);
@@ -241,10 +241,10 @@ class JeuDonneesDemo extends Fixture implements FixtureGroupInterface
 
         // --- Participants Nantes ---
         $david = new Participant();
-        $david->setEmail('david@sortir.com');
-        $david->setPrenom('David');
-        $david->setNom('Leroy');
-        $david->setPseudo('david_l');
+        $david->setEmail('mt@test.com');
+        $david->setPrenom('Mykhailo');
+        $david->setNom('T.');
+        $david->setPseudo('Mymy');
         $david->setTelephone('0644444444');
         $david->setSite($siteNantes);
         $david->setRoles(['ROLE_USER']);
@@ -254,7 +254,7 @@ class JeuDonneesDemo extends Fixture implements FixtureGroupInterface
         );
 
         $emma = new Participant();
-        $emma->setEmail('emma@sortir.com');
+        $emma->setEmail('emma@test.com');
         $emma->setPrenom('Emma');
         $emma->setNom('Petit');
         $emma->setPseudo('emma_p');
@@ -268,7 +268,7 @@ class JeuDonneesDemo extends Fixture implements FixtureGroupInterface
 
         // --- Participants Paris ---
         $francois = new Participant();
-        $francois->setEmail('francois@sortir.com');
+        $francois->setEmail('francois@test.com');
         $francois->setPrenom('François');
         $francois->setNom('Moreau');
         $francois->setPseudo('fra_m');
@@ -281,7 +281,7 @@ class JeuDonneesDemo extends Fixture implements FixtureGroupInterface
         );
 
         $gaelle = new Participant();
-        $gaelle->setEmail('gaelle@sortir.com');
+        $gaelle->setEmail('gaelle@test.com');
         $gaelle->setPrenom('Gaëlle');
         $gaelle->setNom('Simon');
         $gaelle->setPseudo('gaelle_s');
@@ -294,7 +294,7 @@ class JeuDonneesDemo extends Fixture implements FixtureGroupInterface
         );
 
         $hugo = new Participant();
-        $hugo->setEmail('hugo@sortir.com');
+        $hugo->setEmail('hugo@test.com');
         $hugo->setPrenom('Hugo');
         $hugo->setNom('Laurent');
         $hugo->setPseudo('hugo_l');
